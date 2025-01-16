@@ -1,0 +1,281 @@
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title> Instruct </title>
+    <meta name="keywords" content="online education, e-learning, coaching, education, teaching, learning,Instruct, education, Quality learning, India, academic resources">
+    <meta name="description" content="Instruct - High-quality educational platform providing Quality resources for learners in India.">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="shortcut icon" type="image/x-icon" href="assets/img/icon (500 x 500 px).svg">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #0f172a;
+            padding: 2rem;
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: #fff;
+            text-shadow: 0 0 20px rgba(255,255,255,0.2);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            border-radius: 1rem;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: translateX(-100%);
+            transition: 0.5s;
+        }
+
+        .card:hover::before {
+            transform: translateX(100%);
+        }
+
+        .icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .stats {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .stat {
+            padding: 0.5rem;
+            background: rgba(255,255,255,0.05);
+            border-radius: 0.5rem;
+            flex: 1;
+            text-align: center;
+        }
+
+        .details {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            display: none;
+        }
+
+        .card.active .details {
+            display: block;
+        }
+
+        .content-types {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .content-type {
+            background: rgba(255,255,255,0.05);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        .content-type:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Physics Sample</h1>
+        <div class="grid">
+            <div class="card" onclick="toggleCard(this)">
+                <div class="icon">📚</div>
+                <h3 class="title">Chapter-1</h3>
+                <div class="stats">
+                    <div class="stat">All Videos</div>
+                    <div class="stat">All Exercises</div>
+                    <div class="stat">All Notes</div>
+                </div>
+                <div class="details">
+                    <div class="content-types">
+                        <div class="content-type">
+                            Videos
+                            <div class="badge">All</div>
+                        </div>
+                        <div class="content-type">
+                            Exercises
+                            <div class="badge">All</div>
+                        </div>
+                        <div class="content-type">
+                            Notes
+                            <div class="badge">All</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" onclick="toggleCard(this)">
+                <div class="icon">📖</div>
+                <h3 class="title">Chapter-2</h3>
+                <div class="stats">
+                    <div class="stat">0 Videos</div>
+                    <div class="stat">0 Exercises</div>
+                    <div class="stat">2 Notes</div>
+                </div>
+                <div class="details">
+                    <div class="content-types">
+                        <div class="content-type">
+                            Videos
+                            <div class="badge">0</div>
+                        </div>
+                        <div class="content-type">
+                            Exercises
+                            <div class="badge">0</div>
+                        </div>
+                        <div class="content-type">
+                            Notes
+                            <div class="badge">2</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" onclick="toggleCard(this)">
+                <div class="icon">💡</div>
+                <h3 class="title">Chapter-3</h3>
+                <div class="stats">
+                    <div class="stat">1 Video</div>
+                    <div class="stat">0 Exercises</div>
+                    <div class="stat">0 Notes</div>
+                </div>
+                <div class="details">
+                    <div class="content-types">
+                        <div class="content-type">
+                            Videos
+                            <div class="badge">1</div>
+                        </div>
+                        <div class="content-type">
+                            Exercises
+                            <div class="badge">0</div>
+                        </div>
+                        <div class="content-type">
+                            Notes
+                            <div class="badge">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" onclick="toggleCard(this)">
+                <div class="icon">🧠</div>
+                <h3 class="title">Mind Maps</h3>
+                <div class="stats">
+                    <div class="stat">0 Videos</div>
+                    <div class="stat">0 Exercises</div>
+                    <div class="stat">34 Notes</div>
+                </div>
+                <div class="details">
+                    <div class="content-types">
+                        <div class="content-type">
+                            Videos
+                            <div class="badge">0</div>
+                        </div>
+                        <div class="content-type">
+                            Exercises
+                            <div class="badge">0</div>
+                        </div>
+                        <div class="content-type">
+                            Notes
+                            <div class="badge">34</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleCard(card) {
+            // Remove active class from all cards
+            document.querySelectorAll('.card').forEach(c => {
+                if (c !== card) c.classList.remove('active');
+            });
+            // Toggle active class on clicked card
+            card.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
