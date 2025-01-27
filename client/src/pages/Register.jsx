@@ -2,17 +2,16 @@ import React from "react";
 
 import API from "../api";
 
-function Login() {
-  const [form, setForm] = useState({ email: "", password: "" });
+function Register() {
+  const [form, setForm] = useState({ name: "", email: "", password: "" });
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await API.post("/auth/login", form);
-      localStorage.setItem("token", data.token);
-      alert("Login successful!");
+      await API.post("/auth/register", form);
+      alert("Registration successful!");
     } catch (err) {
       alert(err.response.data.message);
     }
@@ -28,10 +27,24 @@ function Login() {
             className="mx-auto w-24 h-24"
           />
           <h1 className="text-2xl font-semibold text-white mt-4">
-            Log in to Continue
+            Create an Account
           </h1>
         </div>
         <form>
+          <div className="mb-4">
+            <label htmlFor="name" className="block text-sm font-medium text-white mb-2">
+              Full Name
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-700 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring focus:ring-orange-500"
+              placeholder="Enter your full name"
+              required
+            />
+          </div>
           <div className="mb-4">
             <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
               Email Address
@@ -46,7 +59,7 @@ function Login() {
               required
             />
           </div>
-          <div className="mb-6">
+          <div className="mb-4">
             <label htmlFor="password" className="block text-sm font-medium text-white mb-2">
               Password
             </label>
@@ -56,7 +69,7 @@ function Login() {
               name="password"
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-700 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring focus:ring-orange-500"
-              placeholder="Enter your password"
+              placeholder="Create a password"
               required
             />
           </div>
@@ -64,12 +77,12 @@ function Login() {
             type="submit"
             onClick={handleSubmit}
             className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 focus:outline-none focus:ring focus:ring-orange-500">
-            Log In
+            Sign Up
           </button>
         </form>
         <div className="mt-4 text-center text-sm">
           <p className="text-gray-400">
-            Don’t have an account? <a href="register" className="text-orange-500 hover:underline">Sign up</a>
+            Already have an account? <a href="login.html" className="text-orange-500 hover:underline">Log in</a>
           </p>
         </div>
       </div>
@@ -77,4 +90,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default Register;

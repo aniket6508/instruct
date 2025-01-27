@@ -7,6 +7,7 @@ import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage'
 import Courses from './pages/Courses';
 import About from './pages/About';
+import Register from './pages/Register';
 
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
           <Route path='/login' element={<Login/>}/>
           <Route path='/courses' element={<Courses/>}/>
           <Route path='/about' element={<About/>}/>
+          <Route path='/register' element={<Register/>}/>
         </Routes>
         </Router>
     </>
