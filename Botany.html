@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-<html class="no-js" lang="en">
-
-<head>
+<html lang="en">
+  <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title> Instruct </title>
@@ -250,7 +249,7 @@
     <div class="container">
         <div class="header">
             <button class="back-button" onclick="goBack()">← Back</button>
-            <h1>Physics Chapters</h1>
+            <h1>Botany</h1>
         </div>
 
         <div class="search-container">
@@ -264,36 +263,23 @@
 
     <script>
         const chapters = [
-            { title: "Vector", emoji: "➡️" },
-            { title: "Units and Measurements", emoji: "📏" },
-            { title: "Motion in a Straight Line", emoji: "⬆️" },
-            { title: "Motion in a Plane", emoji: "↗️" },
-            { title: "Newton's Laws of Motion", emoji: "🏃" },
-            { title: "Work, Energy & Power", emoji: "⚡" },
-            { title: "Centre of Mass & System of Particles", emoji: "🎯" },
-            { title: "Rotational Motion", emoji: "🎡" },
-            { title: "Gravitation", emoji: "🌍" },
-            { title: "Mechanical Properties of Solids", emoji: "🧱" },
-            { title: "Mechanical Properties of Fluids", emoji: "💧" },
-            { title: "Thermal Properties of Matter", emoji: "🌡️" },
-            { title: "Kinetic Theory of Gases", emoji: "💨" },
-            { title: "Thermodynamics", emoji: "🔥" },
-            { title: "Oscillations", emoji: "↕️" },
-            { title: "Waves", emoji: "〰️" },
-            { title: "Electric Charges and Fields", emoji: "⚡" },
-            { title: "Electrostatic Potential", emoji: "🔋" },
-            { title: "Current Electricity", emoji: "💡" },
-            { title: "Moving Charges and Magnetism", emoji: "🧲" },
-            { title: "Magnetism and Matter", emoji: "🧲" },
-            { title: "Electromagnetic Induction", emoji: "⚡" },
-            { title: "Alternating Current", emoji: "↔️" },
-            { title: "Electromagnetic Waves", emoji: "📻" },
-            { title: "Ray Optics and Optical Instruments", emoji: "🔭" },
-            { title: "Wave Optics", emoji: "🔦" },
-            { title: "Dual Nature of Radiation and Matter", emoji: "🎭" },
-            { title: "Atoms", emoji: "⚛️" },
-            { title: "Nuclei", emoji: "☢️" },
-            { title: "Semiconductor Electronics", emoji: "🗄️" },
+            { title: "Cell – The Unit of Life", emoji: "🔬" },
+            { title: "Cell Cycle and Cell Division", emoji: "💠" },
+            { title: "The Living World", emoji: "🌍" },
+            { title: "Biological Classification", emoji: "🌲" },
+            { title: "Plant Kingdom", emoji: "🌿" },
+            { title: "Morphology of Flowering Plants", emoji: "🌸" },
+            { title: "Anatomy of Flowering Plants", emoji: "🔍" },
+            { title: "Photosynthesis in Higher Plants", emoji: "☀️" },
+            { title: "Respiration in Plants", emoji: "🌳" },
+            { title: "Plant Growth and Development", emoji: "🌱" },
+            { title: "Sexual Reproduction in Flowering Plant", emoji: "🌺" },
+            { title: "Principle of Inheritance and Variation", emoji: "🧬" },
+            { title: "Molecular Basis of Inheritance", emoji: "🔬" },
+            { title: "Microbes in Human Welfare", emoji: "🦠" },
+            { title: "Organisms and Population", emoji: "👨🏻‍👩🏻‍👧🏻‍👦🏻" },
+            { title: "Ecosystem", emoji: "🪸" },
+            { title: "Biodiversity and Conservation", emoji: "🤝" }
         ];
 
         function generateCards() {
@@ -345,11 +331,9 @@
 
         function toggleCard(header) {
             const currentCard = header.closest('.card');
-            // Close all other cards
             document.querySelectorAll('.card').forEach(card => {
                 if (card !== currentCard) {
                     card.classList.remove('active');
-                    // Also close nested dropdowns in other cards
                     card.querySelectorAll('.nested-dropdown').forEach(dropdown => {
                         dropdown.classList.remove('active');
                     });
