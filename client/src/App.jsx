@@ -8,7 +8,8 @@ import HomePage from './pages/HomePage'
 import Courses from './pages/Courses';
 import About from './pages/About';
 import Register from './pages/Register';
-
+import ProtectedRoute from './components/ProtectedRoute';
+import Vision from './pages/Vision';
 
 function App() {
   return (
@@ -17,10 +18,18 @@ function App() {
         <Navbar/>
         <Routes>
           <Route path='/' element={<HomePage/>}/>                                
-          <Route path='/login' element={<Login/>}/>
-          <Route path='/courses' element={<Courses/>}/>
+          <Route
+          path="/protected"
+          element={
+            <ProtectedRoute>
+              <h1>Welcome to the protected page!</h1>
+            </ProtectedRoute>
+          }
+        />
           <Route path='/about' element={<About/>}/>
           <Route path='/register' element={<Register/>}/>
+          <Route path='/login' element={<Login/>}/>
+          <Route path='/vision' element={<Vision/>}/>
         </Routes>
         </Router>
     </>

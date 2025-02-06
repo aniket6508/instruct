@@ -1,9 +1,11 @@
 import React from "react";
-
-import API from "../api";
+import { useState } from "react";
+import API from "../../api";
+import { useNavigate } from "react-router-dom";
 
 function Register() {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const navigate = useNavigate();
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -12,6 +14,7 @@ function Register() {
     try {
       await API.post("/auth/register", form);
       alert("Registration successful!");
+      navigate("/login")
     } catch (err) {
       alert(err.response.data.message);
     }
