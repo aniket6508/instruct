@@ -45,38 +45,58 @@ router.get('/getAllCourses', authenticateToken, (req, res) => {
         });
 });
 
-router.post(
-    "/addCourse",
-    authenticateToken,
-    // Use multer to handle two file fields (if present)
-    upload.fields([{ name: "pdf", maxCount: 1 }, { name: "audioFile", maxCount: 1 }]),
-    async (req, res) => {
-        try {
-            const verified = jwt.verify(req.headers.authorization.split(" ")[1], process.env.JWT_SECRET);
-            const user = await User.findById(verified.id);
-            if (!user) return res.status(404).json({ message: "User not found!" });
-            if (user.type !== "admin") {
-                return res.status(403).json({ success: false, message: "Access denied. Admin privileges required." });
-            }
-            const { courseName, description, videoUrl } = req.body;
-            // Files come from req.files – if using local disk, file.path; if S3, file.location
-            const pdfFile = req.files["pdf"] ? req.files["pdf"][0].location || req.files["pdf"][0].path : "";
-            const audioFile = req.files["audioFile"] ? req.files["audioFile"][0].location || req.files["audioFile"][0].path : "";
-            const newCourse = new Course({
-                id: Date.now(), // or some other unique identifier
-                courseName,
-                description,
-                videoUrl,
-                pdf: pdfFile,
-                audioFile: audioFile,
+router.post('/addCourse', (req, res) => {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ message: "No token provided!" });
+
+    try {
+        const verified = jwt.verify(token, process.env.JWT_SECRET);
+
+        User.findById(verified.id)
+            .then(user => {
+                if (!user) {
+                    return res.status(404).json({ message: "User not found!" });
+                }
+
+                if (user.type !== 'admin') {
+                    return res.status(403).json({
+                        success: false,
+                        message: "Access denied. Admin privileges required."
+                    });
+                }
+
+                const { id, courseName, description, videoUrl, pdf, audioFile } = req.body;
+
+                const newCourse = new Course({
+                    id,
+                    courseName,
+                    description,
+                    videoUrl,
+                    pdf,
+                    audioFile
+                });
+
+                return newCourse.save()
+                    .then(course => {
+                        res.status(201).json({
+                            success: true,
+                            message: "Course created successfully",
+                            userId: verified.id,
+                            course: course
+                        });
+                    });
+            })
+            .catch(error => {
+                res.status(500).json({
+                    success: false,
+                    message: "Error creating course",
+                    error: error.message
+                });
             });
-            const course = await newCourse.save();
-            res.status(201).json({ success: true, message: "Course created successfully", userId: verified.id, course });
-        } catch (error) {
-            res.status(500).json({ success: false, message: "Error creating course", error: error.message });
-        }
+    } catch (error) {
+        res.status(401).json({ message: "Invalid token!" });
     }
-);
+});
 
 router.delete('/courses/:courseId', (req, res) => {
     const token = req.headers.authorization?.split(" ")[1];

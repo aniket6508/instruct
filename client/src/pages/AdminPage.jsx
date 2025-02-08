@@ -57,25 +57,25 @@ function AdminPage() {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      const formData = new FormData();
-      formData.append("courseName", courseForm.courseName);
-      formData.append("description", courseForm.description);
-      formData.append("videoUrl", courseForm.videoUrl);
-      if (pdfFile) formData.append("pdf", pdfFile);
-      if (audioFile) formData.append("audioFile", audioFile);
-
-      const response = await API.post("/courses/addCourse", formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await API.post(
+        "/courses/addCourse",
+        courseForm,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       if (response.data.success) {
         toast.success("Course added successfully!");
-        setCourseForm({ courseName: "", description: "", videoUrl: "" });
-        setPdfFile(null);
-        setAudioFile(null);
-        // fetchStats(); // update stats if needed
+        setCourseForm({
+          courseName: "",
+          description: "",
+          videoUrl: "",
+          pdf: "",
+          audioFile: "",
+        });
+        fetchStats();
       } else {
         toast.error(response.data.message || "Failed to add course.");
       }
@@ -96,9 +96,16 @@ function AdminPage() {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+      console.log(response)
       if (response.data.success) {
-        toast.success("New admin created successfully!");
-        setAdminForm({ name: "", email: "", password: "" });
+        // setAdminForm({ name: "", email: "", password: "" });
+        setAdminForm({
+          name: "",
+          email: "",
+          password: ""
+        });
+        console.log(adminForm)
+        fetchStats();
       } else {
         toast.error(response.data.message || "Failed to create admin.");
       }
@@ -163,7 +170,7 @@ function AdminPage() {
           <button
             className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
               activeTab === 'course'
-                ? 'bg-blue-500 text-white'
+                ? 'bg-blue-500 text-black'
                 : 'bg-white text-gray-700 hover:bg-gray-50'
             }`}
             onClick={() => setActiveTab('course')}
@@ -174,7 +181,7 @@ function AdminPage() {
           <button
             className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
               activeTab === 'admin'
-                ? 'bg-blue-500 text-white'
+                ? 'bg-blue-500 text-black'
                 : 'bg-white text-gray-700 hover:bg-gray-50'
             }`}
             onClick={() => setActiveTab('admin')}
@@ -188,7 +195,7 @@ function AdminPage() {
         <div className="bg-white rounded-lg shadow-md p-6">
           {activeTab === 'course' ? (
             <>
-              <h2 className="text-xl font-semibold text-gray-800 mb-6">Add New Course</h2>
+              <h2 className="text-xl font-semibold text-black mb-6">Add New Course</h2>
               <form onSubmit={handleCourseSubmit} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -255,40 +262,40 @@ function AdminPage() {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
-                <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  <div className="flex items-center gap-2">
-                    <FileText size={16} />
-                    PDF File
-                  </div>
-                </label>
-                <input
-                  type="file"
-                  accept="application/pdf"
-                  onChange={(e) => setPdfFile(e.target.files[0])}
-                  className="w-full"
-                />
-              </div>
+              {/*  <div>*/}
+              {/*  <label className="block text-sm font-medium text-gray-700 mb-1">*/}
+              {/*    <div className="flex items-center gap-2">*/}
+              {/*      <FileText size={16} />*/}
+              {/*      PDF File*/}
+              {/*    </div>*/}
+              {/*  </label>*/}
+              {/*  <input*/}
+              {/*    type="file"*/}
+              {/*    accept="application/pdf"*/}
+              {/*    onChange={(e) => setPdfFile(e.target.files[0])}*/}
+              {/*    className="w-full"*/}
+              {/*  />*/}
+              {/*</div>*/}
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  <div className="flex items-center gap-2">
-                    <FileAudio size={16} />
-                    Audio File
-                  </div>
-                </label>
-                <input
-                  type="file"
-                  accept="audio/*"
-                  onChange={(e) => setAudioFile(e.target.files[0])}
-                  className="w-full"
-                />
-              </div>
+              {/*<div>*/}
+              {/*  <label className="block text-sm font-medium text-gray-700 mb-1">*/}
+              {/*    <div className="flex items-center gap-2">*/}
+              {/*      <FileAudio size={16} />*/}
+              {/*      Audio File*/}
+              {/*    </div>*/}
+              {/*  </label>*/}
+              {/*  <input*/}
+              {/*    type="file"*/}
+              {/*    accept="audio/*"*/}
+              {/*    onChange={(e) => setAudioFile(e.target.files[0])}*/}
+              {/*    className="w-full"*/}
+              {/*  />*/}
+              {/*</div>*/}
 
               
                 <button
                   type="submit"
-                  className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
+                  className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center gap-2 black-bg"
                 >
                   <Plus size={20} />
                   Add Course
@@ -337,7 +344,7 @@ function AdminPage() {
                 </div>
                 <button
                   type="submit"
-                  className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
+                  className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center gap-2 black-bg"
                 >
                   <User size={20} />
                   Create Admin
