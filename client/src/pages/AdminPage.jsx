@@ -116,7 +116,7 @@ function AdminPage() {
   };
 
   return (
-    <div className="min-h-screen mx-auto pt-250 p-8 ">
+    <div className="min-h-screen w-screen mx-auto pt-200 p-8 ">
       {/* Navbar */}
       <nav className=" shadow-md px-6 py-4">
         <div className="flex justify-between items-center">
