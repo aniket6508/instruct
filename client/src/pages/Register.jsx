@@ -1,92 +1,150 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import API from "../../api";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import { Mail, Lock, UserPlus, User } from "lucide-react";
 
 function Register() {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       await API.post("/auth/register", form);
-      alert("Registration successful!");
-      navigate("/login")
+      toast.success("Registration successful! Please sign in.");
+      navigate("/login");
     } catch (err) {
-      alert(err.response.data.message);
+      toast.error(err.response?.data?.message || "Registration failed. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black">
-      <div className="bg-gray-900 p-8 rounded-2xl shadow-lg max-w-sm w-full">
-        <div className="mb-6 text-center">
-          <img 
-            src="assets/img/logo/main_logo.svg" 
-            alt="Logo" 
-            className="mx-auto w-24 h-24"
-          />
-          <h1 className="text-2xl font-semibold text-white mt-4">
-            Create an Account
-          </h1>
-        </div>
-        <form>
-          <div className="mb-4">
-            <label htmlFor="name" className="block text-sm font-medium text-white mb-2">
-              Full Name
-            </label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-700 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring focus:ring-orange-500"
-              placeholder="Enter your full name"
-              required
-            />
+    <div className="min-h-screen w-screen pt-150 flex items-center justify-center bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
+      <div className="relative w-full max-w-md mx-4">
+        {/* Decorative Elements */}
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-blue-600/20 transform -rotate-12 rounded-3xl blur-3xl" />
+        
+        <div className="relative bg-gray-800/80 backdrop-blur-xl p-8 rounded-2xl shadow-2xl border border-gray-700/50">
+          <div className="mb-8 text-center">
+            <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+              <UserPlus size={32} className="text-white" />
+            </div>
+            <h1 className="text-3xl font-bold text-white bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-400">
+              Create Account
+            </h1>
+            <p className="text-gray-400 mt-2">
+              Join us and start your journey
+            </p>
           </div>
-          <div className="mb-4">
-            <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
-              Email Address
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-700 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring focus:ring-orange-500"
-              placeholder="Enter your email"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="password" className="block text-sm font-medium text-white mb-2">
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-700 bg-gray-800 text-white rounded-lg focus:outline-none focus:ring focus:ring-orange-500"
-              placeholder="Create a password"
-              required
-            />
-          </div>
-          <button
-            type="submit"
-            onClick={handleSubmit}
-            className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 focus:outline-none focus:ring focus:ring-orange-500">
-            Sign Up
-          </button>
-        </form>
-        <div className="mt-4 text-center text-sm">
-          <p className="text-gray-400">
-            Already have an account? <a href="login.html" className="text-orange-500 hover:underline">Log in</a>
-          </p>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1.5">
+                  Full Name
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <User size={18} className="text-gray-500" />
+                  </div>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    onChange={handleChange}
+                    value={form.name}
+                    className="w-full pl-10 pr-4 py-2.5 bg-gray-900/50 border border-gray-700 text-gray-100 rounded-xl
+                             focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500
+                             placeholder-gray-500 transition-all duration-200"
+                    placeholder="Enter your full name"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1.5">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Mail size={18} className="text-gray-500" />
+                  </div>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    onChange={handleChange}
+                    value={form.email}
+                    className="w-full pl-10 pr-4 py-2.5 bg-gray-900/50 border border-gray-700 text-gray-100 rounded-xl
+                             focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500
+                             placeholder-gray-500 transition-all duration-200"
+                    placeholder="Enter your email"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1.5">
+                  Password
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Lock size={18} className="text-gray-500" />
+                  </div>
+                  <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    onChange={handleChange}
+                    value={form.password}
+                    className="w-full pl-10 pr-4 py-2.5 bg-gray-900/50 border border-gray-700 text-gray-100 rounded-xl
+                             focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500
+                             placeholder-gray-500 transition-all duration-200"
+                    placeholder="Create a password"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full py-2.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white text-sm font-semibold
+                       rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-200
+                       focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:ring-offset-1 
+                       focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed
+                       flex items-center justify-center gap-2"
+            >
+              {isLoading ? (
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                <>
+                  <UserPlus size={18} />
+                  Create Account
+                </>
+              )}
+            </button>
+
+            <div className="mt-6 text-center text-sm text-gray-400">
+              Already have an account?{" "}
+              <Link
+                to="/login"
+                className="text-purple-400 hover:text-purple-300 transition-colors duration-200"
+              >
+                Sign in
+              </Link>
+            </div>
+          </form>
         </div>
       </div>
     </div>
