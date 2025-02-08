@@ -2,8 +2,28 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const passport = require("passport");
 
 const router = express.Router();
+
+
+
+// ----- Google OAuth -----
+// Step 1: Redirect to Google for authentication
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+// Step 2: Google redirects back to your callback URL
+router.get('/google/callback', 
+  passport.authenticate('google', { session: false, failureRedirect: '/login' }),
+  (req, res) => {
+    // Successful authentication: create a JWT token
+    const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    // Redirect to your frontend with the token (adjust the URL as needed)
+    res.redirect(`http://localhost:3000/auth/success?token=${token}`);
+  }
+);
+
+
 
 // Registration
 router.post("/register", async (req, res) => {

@@ -7,12 +7,15 @@ const authRoutes = require("./routes/auth");
 const courseRoutes = require("./routes/course");
 const User = require("./models/User");
 const paymentRoutes = require('./routes/payment');
+const passport = require('./config/passport');
 
 const app = express();
 
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
+
+app.use(passport.initialize());
 
 // Routes
 app.use("/api/auth", authRoutes);

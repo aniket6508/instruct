@@ -12,6 +12,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Vision from './pages/Vision';
 import AdminPage from './pages/AdminPage';
 import CourseDetail from './pages/CourseDetail';
+import AuthSuccess from './components/AuthSuccess';
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
           <Route path="/admin" element={<AdminPage />} />
           <Route path='/my-courses' element={<Courses/>}/>
           <Route path='/course-details/:id' element={<CourseDetail/>}/>
+          <Route path="/auth/success" element={<AuthSuccess />} />
         </Routes>
         </Router>
     </>

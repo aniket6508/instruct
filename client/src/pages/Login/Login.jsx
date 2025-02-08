@@ -27,7 +27,7 @@ function Login() {
       } else {
         navigate("/");
       }
-      
+
 
     } catch (err) {
       // Show error toast (from server message or fallback)
@@ -111,6 +111,16 @@ function Login() {
             Log In
           </button>
         </form>
+
+        <div className="mt-4">
+        {/* Link to Google OAuth */}
+        <a
+          href="http://localhost:5000/api/auth/google"
+          className="w-full py-2 bg-red-600 text-white text-sm font-semibold rounded-lg hover:bg-red-700 transition-colors duration-300 block text-center"
+        >
+          Sign in with Google
+        </a>
+      </div>
 
         {/* Extra Links */}
         <div className="mt-4 flex items-center justify-between text-sm text-gray-400">
