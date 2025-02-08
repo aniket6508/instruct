@@ -1,4 +1,3 @@
-// routes/payment.js
 const express = require('express');
 const router = express.Router();
 const Razorpay = require("razorpay");
@@ -7,7 +6,6 @@ const Course = require('../models/Course');
 const User = require('../models/User');
 const jwt = require("jsonwebtoken");
 
-// Re-use your authentication middleware (or import it from a common file)
 const authenticateToken = (req, res, next) => {
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) return res.status(401).json({ message: "No token provided!" });

@@ -1,4 +1,3 @@
-// utils/upload.js
 const multer = require("multer");
 
 let upload;
