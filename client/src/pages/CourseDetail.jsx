@@ -1,6 +1,50 @@
 import React from 'react'
+import axios from 'axios'
 
-function CourseDetail() {
+function CourseDetail({courseId}) {
+  const handleBuyNow = async () => {
+    try {
+      // 1. Create order
+      const orderResponse = await axios.post('/api/payment/create-order', { courseId }, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      const { order } = orderResponse.data;
+
+      // 2. Open Razorpay checkout (assumes you have included Razorpay's checkout.js script)
+      const options = {
+        key: process.env.REACT_APP_RAZORPAY_KEY_ID,
+        amount: order.amount,
+        currency: order.currency,
+        order_id: order.id,
+        name: "Your Course Platform",
+        description: "Purchase Course",
+        handler: async function (response) {
+          // 3. Verify payment on the server
+          const verifyResponse = await axios.post('/api/payment/verify-payment', {
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+            courseId
+          }, {
+            headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+          });
+          if (verifyResponse.data.success) {
+            alert("Payment successful and course purchased!");
+          }
+        },
+        prefill: {
+          // Prefill details if available
+        }
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      console.error("Error during purchase", error);
+      alert("There was an error processing your purchase.");
+    }
+  };
+
   return (
     <div>
       <main>
@@ -128,7 +172,7 @@ function CourseDetail() {
                       </div>
                     </li>
                   </ul>
-                  <div className="cart-btn">
+                  <div className="cart-btn"  onClick={handleBuyNow}>
                     <a className="offer_btn" href="Vision.html">
                       Buy Now 🎓
                     </a>

@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const authRoutes = require("./routes/auth");
 const courseRoutes = require("./routes/course");
 const User = require("./models/User");
+const paymentRoutes = require('./routes/payment');
 
 const app = express();
 
@@ -15,6 +16,9 @@ app.use(bodyParser.json());
 
 // Routes
 app.use("/api/auth", authRoutes);
+
+app.use('/api/payment', paymentRoutes);
+
 app.use("/api/courses", courseRoutes);
 
 

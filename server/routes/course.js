@@ -147,7 +147,26 @@ router.delete('/courses/:courseId', (req, res) => {
     }
 });
 
-
+// routes/course.js (or add a new endpoint)
+router.get('/course/:courseId', authenticateToken, async (req, res) => {
+    try {
+      const course = await Course.findById(req.params.courseId);
+      if (!course) {
+        return res.status(404).json({ message: "Course not found" });
+      }
+  
+      // Allow access if the user is an admin, or if the user is a student who has purchased the course
+      const user = await User.findById(req.user.id);
+      if (user.type === 'student' && !user.purchasedCourses.includes(course._id)) {
+        return res.status(403).json({ message: "Access denied. You have not purchased this course." });
+      }
+  
+      res.status(200).json({ course });
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching course", error: error.message });
+    }
+  });
+  
 
 
 
