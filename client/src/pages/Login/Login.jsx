@@ -17,10 +17,18 @@ function Login() {
 
       // Save token & show success toast
       localStorage.setItem("token", data.token);
+      localStorage.setItem("userType", data.user.type);
       toast.success("Logged in successfully!");
 
-      // Redirect to homepage
-      navigate("/");
+
+      // Redirect based on user type
+      if (data.user.type === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
+      
+
     } catch (err) {
       // Show error toast (from server message or fallback)
       const message = err.response?.data?.message || "Login failed. Please try again.";

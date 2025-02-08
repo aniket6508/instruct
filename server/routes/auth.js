@@ -13,7 +13,7 @@ router.post("/register", async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const newUser = new User({ name, email, password: hashedPassword, type: "user" });
+    const newUser = new User({ name, email, password: hashedPassword, type: "student" });
     await newUser.save();
 
     res.status(201).json({ message: "User registered successfully!" });
@@ -35,7 +35,7 @@ router.post("/login", async (req, res) => {
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
-    res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
+    res.json({ token, user: { id: user._id, name: user.name, email: user.email, type: user.type } });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

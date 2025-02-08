@@ -5,6 +5,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const authRoutes = require("./routes/auth");
 const courseRoutes = require("./routes/course");
+const User = require("./models/User");
 
 const app = express();
 
@@ -24,4 +25,44 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 
 // Start the server
 const PORT = process.env.PORT || 5000;
+
+
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log("MongoDB connected!");
+    
+    // 1) Create default admin if not exists
+    createDefaultAdmin();
+  })
+  .catch((err) => console.error(err));
+
+// This function checks if admin user exists, otherwise creates one
+async function createDefaultAdmin() {
+  try {
+    const adminEmail = "admin@instruct.edu";
+    const existingAdmin = await User.findOne({ email: adminEmail });
+    if (!existingAdmin) {
+      const bcrypt = require("bcrypt");
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash("admin", salt);
+
+      const adminUser = new User({
+        name: "Default Admin",
+        email: adminEmail,
+        password: hashedPassword,
+        type: "admin",
+      });
+
+      await adminUser.save();
+      console.log("Default admin user created:", adminEmail, "password: admin");
+    } else {
+      console.log("Admin user already exists:", existingAdmin.email);
+    }
+  } catch (error) {
+    console.error("Error creating default admin user:", error.message);
+  }
+}
+
+
+
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

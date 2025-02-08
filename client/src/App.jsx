@@ -10,6 +10,8 @@ import About from './pages/About';
 import Register from './pages/Register';
 import ProtectedRoute from './components/ProtectedRoute';
 import Vision from './pages/Vision';
+import AdminPage from './pages/AdminPage';
+import CourseDetail from './pages/CourseDetail';
 
 function App() {
   return (
@@ -30,6 +32,9 @@ function App() {
           <Route path='/register' element={<Register/>}/>
           <Route path='/login' element={<Login/>}/>
           <Route path='/vision' element={<Vision/>}/>
+          <Route path="/admin" element={<AdminPage />} />
+          <Route path='/my-courses' element={<Courses/>}/>
+          <Route path='/course-details/:id' element={<CourseDetail/>}/>
         </Routes>
         </Router>
     </>

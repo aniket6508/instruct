@@ -4,20 +4,27 @@ import { Link, useNavigate } from "react-router-dom";
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
   
+  const navigate = useNavigate();
+
   useEffect(() => {
     // If there's a token in localStorage, consider the user 'logged in'
     const token = localStorage.getItem("token");
     setIsLoggedIn(!!token);
   }, []);
 
-  // Optional: If you'd like to log out somewhere in the navbar:
-  // const navigate = useNavigate();
-  // const handleLogout = () => {
-  //   localStorage.removeItem("token");
-  //   setIsLoggedIn(false);
-  //   navigate("/login");
-  // };
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setIsLoggedIn(false);
+    // If you want to hide the dropdown after logging out:
+    setShowUserMenu(false);
+    navigate("/login");
+  };
+
+  const toggleUserMenu = () => {
+    setShowUserMenu(!showUserMenu);
+  };
 
   return (
     <header>
@@ -42,7 +49,6 @@ function Navbar() {
                     className="navbar-toggler"
                     type="button"
                     onClick={() => setMenuOpen(!menuOpen)}
-                    // Standard ARIA attributes (good practice)
                     aria-controls="navbarSupportedContent"
                     aria-expanded={menuOpen ? "true" : "false"}
                     aria-label="Toggle navigation"
@@ -79,13 +85,13 @@ function Navbar() {
               </nav>
             </div>
 
-            {/* -- Right Section (Login / MyCourses, Icon, Mobile Toggler) -- */}
+            {/* -- Right Section (Login / MyCourses, UserIcon, Mobile Toggler) -- */}
             <div className="col-xl-3 col-lg-2 col-7">
               <div className="right-nav d-flex align-items-center justify-content-end">
                 <div className="right-btn mr-25 mr-xs-15">
                   <ul className="d-flex align-items-center">
+                    {/* MyCourses or Login */}
                     <li>
-                      {/* If logged in, show MyCourses; else Login */}
                       {isLoggedIn ? (
                         <Link to="/my-courses" className="theme_btn free_btn">
                           My Courses
@@ -96,15 +102,53 @@ function Navbar() {
                         </Link>
                       )}
                     </li>
-                    <li className="sign-in ml-20">
+                    
+                    {/* User Icon - toggles user menu */}
+                    <li className="sign-in ml-20" style={{ position: "relative" }}>
                       <script src="https://cdn.lordicon.com/lordicon.js"></script>
-                      <lord-icon
-                        src="https://cdn.lordicon.com/fmasbomy.json"
-                        trigger="click"
-                        state="hover-looking-around"
-                        colors="primary:#121331,secondary:#c6c6c4,tertiary:#b16901"
-                        style={{ width: "45px", height: "45px" }}
-                      ></lord-icon>
+                      
+                      {/* Clickable icon */}
+                      <div onClick={toggleUserMenu} style={{ cursor: "pointer" }}>
+                        <lord-icon
+                          src="https://cdn.lordicon.com/fmasbomy.json"
+                          trigger="click"
+                          state="hover-looking-around"
+                          colors="primary:#121331,secondary:#c6c6c4,tertiary:#b16901"
+                          style={{ width: "45px", height: "45px" }}
+                        />
+                      </div>
+                      
+                      {/* Dropdown Menu (only if logged in) */}
+                      {isLoggedIn && showUserMenu && (
+                        <div
+                          className="user-dropdown-menu"
+                          style={{
+                            position: "absolute",
+                            top: "50px",
+                            right: 0,
+                            background: "#fff",
+                            color: "#000",
+                            border: "1px solid #ccc",
+                            borderRadius: "5px",
+                            padding: "0.5rem 1rem",
+                            zIndex: 9999,
+                          }}
+                        >
+                          <button
+                            onClick={handleLogout}
+                            style={{
+                              border: "none",
+                              background: "none",
+                              padding: "0",
+                              margin: "0",
+                              fontSize: "1rem",
+                              cursor: "pointer",
+                            }}
+                          >
+                            Logout
+                          </button>
+                        </div>
+                      )}
                     </li>
                   </ul>
                 </div>
@@ -118,7 +162,7 @@ function Navbar() {
               </div>
             </div>
 
-            {/* Nav for mobile view, if you prefer separate or the same one */}
+            {/* Optionally separate nav for mobile */}
           </div>
         </div>
       </div>
