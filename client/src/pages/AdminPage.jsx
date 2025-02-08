@@ -57,25 +57,25 @@ function AdminPage() {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      const response = await API.post(
-        "/courses/addCourse",
-        courseForm,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const formData = new FormData();
+      formData.append("courseName", courseForm.courseName);
+      formData.append("description", courseForm.description);
+      formData.append("videoUrl", courseForm.videoUrl);
+      if (pdfFile) formData.append("pdf", pdfFile);
+      if (audioFile) formData.append("audioFile", audioFile);
+
+      const response = await API.post("/courses/addCourse", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
       if (response.data.success) {
         toast.success("Course added successfully!");
-        setCourseForm({
-          courseName: "",
-          description: "",
-          videoUrl: "",
-          pdf: "",
-          audioFile: "",
-        });
-        fetchStats();
+        setCourseForm({ courseName: "", description: "", videoUrl: "" });
+        setPdfFile(null);
+        setAudioFile(null);
+        // fetchStats(); // update stats if needed
       } else {
         toast.error(response.data.message || "Failed to add course.");
       }
@@ -255,6 +255,37 @@ function AdminPage() {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
+                <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <div className="flex items-center gap-2">
+                    <FileText size={16} />
+                    PDF File
+                  </div>
+                </label>
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={(e) => setPdfFile(e.target.files[0])}
+                  className="w-full"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <div className="flex items-center gap-2">
+                    <FileAudio size={16} />
+                    Audio File
+                  </div>
+                </label>
+                <input
+                  type="file"
+                  accept="audio/*"
+                  onChange={(e) => setAudioFile(e.target.files[0])}
+                  className="w-full"
+                />
+              </div>
+
+              
                 <button
                   type="submit"
                   className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
