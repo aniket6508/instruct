@@ -1,11 +1,12 @@
 import React from 'react'
 import axios from 'axios'
+import API from "../../api";
 
 function CourseDetail({courseId}) {
   const handleBuyNow = async () => {
     try {
       // 1. Create order
-      const orderResponse = await axios.post('/api/payment/create-order', { courseId }, {
+        const orderResponse = await API.post("/payment/create-order", { courseId }, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
       const { order } = orderResponse.data;
@@ -172,10 +173,10 @@ function CourseDetail({courseId}) {
                       </div>
                     </li>
                   </ul>
-                  <div className="cart-btn"  onClick={handleBuyNow}>
-                    <a className="offer_btn" href="Vision.html">
+                  <div className="cart-btn offer_btn"  onClick={handleBuyNow}>
+
                       Buy Now 🎓
-                    </a>
+
                   </div>
                 </div>
               </div>

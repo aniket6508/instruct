@@ -24,7 +24,7 @@ const razorpay = new Razorpay({
 });
 
 // Route to create an order
-router.post('/create-order', authenticateToken, async (req, res) => {
+router.post("/create-order", authenticateToken, async (req, res) => {
     try {
         const { courseId } = req.body;
         // Check if the course exists
@@ -58,7 +58,7 @@ router.post('/create-order', authenticateToken, async (req, res) => {
 });
 
 // Route to verify the payment and update user's purchased courses
-router.post('/verify-payment', authenticateToken, async (req, res) => {
+router.post("/verify-payment", authenticateToken, async (req, res) => {
     try {
         const { razorpay_order_id, razorpay_payment_id, razorpay_signature, courseId } = req.body;
 
