@@ -3,7 +3,7 @@ const express = require('express');
 const Course = require('../models/Course')
 const User = require('../models/User')
 const bcrypt = require("bcrypt");
-
+const Transaction = require("../models/Transaction");
 
 
 const router = express.Router();
@@ -42,8 +42,9 @@ router.get('/stats', authenticateToken, async (req, res) => {
 
         const userCount = await User.countDocuments();
         const courseCount = await Course.countDocuments();
+        const transactionCount = await Transaction.countDocuments();
 
-        return res.status(200).json({ userCount, courseCount });
+        return res.status(200).json({ userCount, courseCount , transactionCount });
     } catch (error) {
         console.error("Error in /stats endpoint:", error);
         return res.status(500).json({ message: "Server error", error: error.message });

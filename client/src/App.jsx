@@ -9,11 +9,13 @@ import Courses from './pages/Courses';
 import About from './pages/About';
 import Register from './pages/Register';
 import ProtectedRoute from './components/ProtectedRoute';
-import Vision from './pages/Vision';
+import Vision from './pages/CourseContent';
 import AdminPage from './pages/AdminPage';
 import CourseDetail from './pages/CourseDetail';
 import AuthSuccess from './components/AuthSuccess';
 import Footer from './components/Footer';
+import CourseContent from './pages/CourseContent';
+import CourseContentDetail from './pages/CourseContentDetail';
 
 function App() {
   return (
@@ -35,8 +37,11 @@ function App() {
           <Route path='/login' element={<Login />} />
           <Route path='/vision' element={<Vision />} />
           <Route path="/admin" element={<AdminPage />} />
-          <Route path='/my-courses' element={<Courses />} />
-          <Route path='/course-details/:id' element={<CourseDetail />} />
+          <Route path='/courses' element={<Courses />} />
+          <Route path='/course-content/:courseId' element={<CourseContent />} />
+          <Route path='/course-content-detail/:courseId/:subjectId' element={<CourseContentDetail />} />
+
+          <Route path='/course/:courseId' element={<CourseDetail />} />
           <Route path="/auth/success" element={<AuthSuccess />} />
         </Routes>
         <Footer />

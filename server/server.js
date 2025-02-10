@@ -9,6 +9,8 @@ const User = require("./models/User");
 const paymentRoutes = require('./routes/payment');
 const passport = require('./config/passport');
 const adminRoutes = require("./routes/admin")
+const userRoutes = require("./routes/user");
+const transactionRoutes = require("./routes/transaction");
 
 const app = express();
 
@@ -23,6 +25,10 @@ app.use("/api/auth", authRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/api/admin", adminRoutes)
+app.use("/api/user", userRoutes);
+app.use("/api/transactions", transactionRoutes);
+
+
 
 
 // MongoDB Connection

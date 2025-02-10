@@ -1,43 +1,74 @@
-import React from 'react'
-import axios from 'axios'
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import API from "../../api";
+import axios from "axios";
 
-function CourseDetail({courseId}) {
+// Helper to get Razorpay key from environment variables (for Vite/CRA)
+const getRazorpayKey = () => {
+  if (import.meta && import.meta.env && import.meta.env.VITE_RAZORPAY_KEY_ID) {
+    return import.meta.env.VITE_RAZORPAY_KEY_ID;
+  }
+  return process.env.REACT_APP_RAZORPAY_KEY_ID || "";
+};
+
+function CourseDetail() {
+  const { courseId } = useParams();
+  const navigate = useNavigate();
+  const [course, setCourse] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [purchased, setPurchased] = useState(false);
+
+  // Buy Now handler triggers Razorpay checkout flow.
   const handleBuyNow = async () => {
     try {
-      // 1. Create order
-        const orderResponse = await API.post("/payment/create-order", { courseId }, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      // 1. Create order on the backend.
+      const orderResponse = await API.post(
+        "/payment/create-order",
+        { courseId },
+        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+      );
       const { order } = orderResponse.data;
+      console.log("Order received:", order);
 
-      // 2. Open Razorpay checkout (assumes you have included Razorpay's checkout.js script)
+      // 2. Configure Razorpay options.
       const options = {
-        key: process.env.REACT_APP_RAZORPAY_KEY_ID,
+        key: getRazorpayKey(),
         amount: order.amount,
         currency: order.currency,
         order_id: order.id,
         name: "Your Course Platform",
         description: "Purchase Course",
         handler: async function (response) {
-          // 3. Verify payment on the server
-          const verifyResponse = await axios.post('/api/payment/verify-payment', {
-            razorpay_order_id: response.razorpay_order_id,
-            razorpay_payment_id: response.razorpay_payment_id,
-            razorpay_signature: response.razorpay_signature,
-            courseId
-          }, {
-            headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-          });
+          console.log("Payment response:", response);
+          // 3. Verify payment on the server.
+          const verifyResponse = await API.post(
+            "/payment/verify-payment",
+            {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              courseId,
+            },
+            { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+          );
+          console.log("Verification response:", verifyResponse.data);
           if (verifyResponse.data.success) {
             alert("Payment successful and course purchased!");
+            setPurchased(true);
+          } else {
+            alert("Payment verification failed.");
           }
         },
         prefill: {
-          // Prefill details if available
-        }
+          // Optionally add prefill details here.
+        },
       };
 
+      console.log("Razorpay options:", options);
+      if (!window.Razorpay) {
+        alert("Razorpay script is not loaded. Please include the Razorpay checkout script.");
+        return;
+      }
       const rzp = new window.Razorpay(options);
       rzp.open();
     } catch (error) {
@@ -46,20 +77,67 @@ function CourseDetail({courseId}) {
     }
   };
 
+  // Fetch basic course details from the backend.
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    API.get(`/courses/course/${courseId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => {
+        setCourse(res.data.course);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching course details:", err);
+        setLoading(false);
+      });
+  }, [courseId]);
+
+  // Fetch user profile to check if the course is already purchased.
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      API.get("/user/my-courses", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => {
+          const myCourses = res.data.courses;
+          const isPurchased = myCourses.some((c) => c._id === courseId);
+          setPurchased(isPurchased);
+        })
+        .catch((err) => {
+          console.error("Error fetching user profile:", err);
+        });
+    }
+  }, [courseId]);
+
+  if (loading) return <p>Loading course details...</p>;
+  if (!course) return <p>Course not found!</p>;
+
   return (
     <div>
       <main>
         <section className="course-details-area pt-150 pb-120 pt-md-100 pb-md-70 pt-xs-100 pb-xs-70">
           <div className="container p-8">
             <div className="row">
-              {/* Video Section */}
+              {/* Intro Video Section */}
               <div className="col-xxl-8 col-xl-7">
                 <div className="courses-details-wrapper mb-60">
-                  <div 
-                    className="course-details-img mb-30" 
-                    style={{backgroundImage: "url(assets/img/course/details/01.jpg)"}}>
+                  <div
+                    className="course-details-img mb-30"
+                    style={{
+                      backgroundImage: `url(${course.introVideo})`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                    }}
+                  >
                     <div className="video-wrapper">
-                      <a href="https://www.youtube.com/watch?v=7omGYwdcS04" className="popup-video">
+                      <a
+                        href={course.introVideo}
+                        className="popup-video"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         <i className="fas fa-play"></i>
                       </a>
                     </div>
@@ -73,70 +151,17 @@ function CourseDetail({courseId}) {
                   <div className="learn-box">
                     <h5>Included Assets 📚</h5>
                     <ul className="learn-list">
-                      <li>
-                        <a href="#">
-                          <span className="play-video">
-                            <img src="assets/img/icon/video-player.svg" alt="course-list"/>
-                          </span>
-                          Free Youtube Videos
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#">
-                          <span className="play-video">
-                            <i className="fal fa-lock-alt"></i>
-                          </span>
-                          Animative notes used
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#">
-                          <span className="play-video">
-                            <i className="fal fa-lock-alt"></i>
-                          </span>
-                          Recall sheets
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#">
-                          <span className="play-video">
-                            <i className="fal fa-lock-alt"></i>
-                          </span>
-                          Practice questions split in 3 levels
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#">
-                          <span className="play-video">
-                            <i className="fal fa-lock-alt"></i>
-                          </span>
-                          Full Syllabus test
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#">
-                          <span className="play-video">
-                            <i className="fal fa-lock-alt"></i>
-                          </span>
-                          Audio Podcast Of Chapters
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#">
-                          <span className="play-video">
-                            <i className="fal fa-lock-alt"></i>
-                          </span>
-                          Simulations
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#">
-                          <span className="play-video">
-                            <i className="fal fa-lock-alt"></i>
-                          </span>
-                          Lifetime Access
-                        </a>
-                      </li>
+                      {course.includedAssets &&
+                        course.includedAssets.map((asset, index) => (
+                          <li key={index}>
+                            <a href="#">
+                              <span className="play-video">
+                                <img src="assets/img/icon/video-player.svg" alt="asset" />
+                              </span>
+                              {asset}
+                            </a>
+                          </li>
+                        ))}
                     </ul>
                   </div>
                 </div>
@@ -146,15 +171,15 @@ function CourseDetail({courseId}) {
             {/* Course Info Section */}
             <div className="row">
               <div className="col-12">
-                <h2 className="courses-title mb-30">Vision</h2>
-                <p>
-                  Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed di nonumy eirmod tempor invidunt ut labore et dolore magn aliq erat.Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed di nonumy eirmod tempor invidunt ut labore et dolore magn aliq erat.
-                </p>
+                <h2 className="courses-title mb-30">{course.courseName}</h2>
+                <p>{course.description}</p>
                 <h5 className="mt-20 mb-20">
                   <span>Created by</span> Instruct team
                 </h5>
                 <div className="date-lang">
-                  <span><b>Language:</b> Hinglish</span>
+                  <span>
+                    <b>Language:</b> {course.languages && course.languages.join(", ")}
+                  </span>
                 </div>
               </div>
             </div>
@@ -167,16 +192,20 @@ function CourseDetail({courseId}) {
                     <li>
                       <div className="price-list">
                         <h5>
-                          <span>₹1999</span>
-                          <b className="sub-title">₹999 🎉</b>
+                          <span>₹{course.originalPrice}</span>
+                          <b className="sub-title">₹{course.discountPrice} 🎉</b>
                         </h5>
                       </div>
                     </li>
                   </ul>
-                  <div className="cart-btn offer_btn"  onClick={handleBuyNow}>
-
-                      Buy Now 🎓
-
+                  <div className="cart-btn offer_btn">
+                    {purchased ? (
+                      <div onClick={() => navigate(`/course-content/${courseId}`)}>
+                        View Course
+                      </div>
+                    ) : (
+                      <div onClick={handleBuyNow}>Buy Now 🎓</div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -185,7 +214,7 @@ function CourseDetail({courseId}) {
         </section>
       </main>
     </div>
-  )
+  );
 }
 
-export default CourseDetail
+export default CourseDetail;

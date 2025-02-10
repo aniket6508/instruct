@@ -1,16 +1,17 @@
+// routes/course.js
+const express = require("express");
 const jwt = require("jsonwebtoken");
-const express = require('express');
-const Course = require('../models/Course')
-const User = require('../models/User')
-const upload = require("../utils/upload");
-
-
+const Course = require("../models/Course");
+const User = require("../models/User");
+// If you are using file uploads for assets, include your upload middleware here
+// const upload = require("../utils/upload");
 const router = express.Router();
 
+// JWT-based authentication middleware
 const authenticateToken = (req, res, next) => {
     const token = req.headers.authorization?.split(" ")[1];
-    if (!token) return res.status(401).json({ message: "No token provided!" });
-
+    if (!token)
+        return res.status(401).json({ message: "No token provided!" });
     try {
         req.user = jwt.verify(token, process.env.JWT_SECRET);
         next();
@@ -19,148 +20,132 @@ const authenticateToken = (req, res, next) => {
     }
 };
 
-router.get('/getAllCourses', authenticateToken, (req, res) => {
-    Course.find()
-        .then(courses => {
-            if (!courses.length) {
-                return res.status(404).json({
-                    success: false,
-                    message: "No courses found"
-                });
-            }
+/* =========================
+   ADMIN CRUD OPERATIONS
+   ========================= */
 
-            res.status(200).json({
-                success: true,
-                count: courses.length,
-                userId: req.user.id,
-                courses
-            });
-        })
-        .catch(error => {
-            res.status(500).json({
-                success: false,
-                message: "Server error occurred while fetching courses",
-                error: error.message
-            });
+// Create a new course (admin only)
+// This endpoint expects a JSON body with the new course details, including subjects and chapters.
+// For example:
+/*
+{
+  "courseName": "Vision",
+  "description": "Lorem ipsum ...",
+  "includedAssets": [
+    "Free Youtube Videos",
+    "Animative notes used",
+    "Recall sheets",
+    "Practice questions split in 3 levels",
+    "Full Syllabus test",
+    "Audio Podcast Of Chapters",
+    "Simulations",
+    "Lifetime Access"
+  ],
+  "introVideo": "https://youtu.be/introVideoLink",
+  "languages": ["English", "Hindi"],
+  "originalPrice": 1999,
+  "discountPrice": 999,
+  "promocode": "VISION50",
+  "subjects": [
+    {
+      "subjectName": "Physics",
+      "chapters": [
+         {
+           "chapterName": "Units and Measurements",
+           "quizLink": "https://example.com/quiz1",
+           "audioLink": "https://example.com/audio1",
+           "pdfLink": "https://example.com/pdf1",
+           "videoLink": "https://example.com/video1"
+         }
+      ]
+    },
+    {
+      "subjectName": "Chemistry",
+      "chapters": [
+         {
+           "chapterName": "Chemical Bonding",
+           "quizLink": "https://example.com/quiz2",
+           "audioLink": "https://example.com/audio2",
+           "pdfLink": "https://example.com/pdf2",
+           "videoLink": "https://example.com/video2"
+         }
+      ]
+    }
+  ]
+}
+*/
+router.post("/createCourse", authenticateToken, async (req, res) => {
+    try {
+        // Only admins can create courses
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(404).json({ message: "User not found!" });
+        if (user.type !== "admin") {
+            return res.status(403).json({ message: "Access denied. Admin privileges required." });
+        }
+        const newCourse = new Course(req.body);
+        const savedCourse = await newCourse.save();
+        res.status(201).json({
+            success: true,
+            message: "Course created successfully",
+            course: savedCourse
         });
-});
-
-router.post('/addCourse', (req, res) => {
-    const token = req.headers.authorization?.split(" ")[1];
-    if (!token) return res.status(401).json({ message: "No token provided!" });
-
-    try {
-        const verified = jwt.verify(token, process.env.JWT_SECRET);
-
-        User.findById(verified.id)
-            .then(user => {
-                if (!user) {
-                    return res.status(404).json({ message: "User not found!" });
-                }
-
-                if (user.type !== 'admin') {
-                    return res.status(403).json({
-                        success: false,
-                        message: "Access denied. Admin privileges required."
-                    });
-                }
-
-                const { id, courseName, description, videoUrl, pdf, audioFile } = req.body;
-
-                const newCourse = new Course({
-                    id,
-                    courseName,
-                    description,
-                    videoUrl,
-                    pdf,
-                    audioFile
-                });
-
-                return newCourse.save()
-                    .then(course => {
-                        res.status(201).json({
-                            success: true,
-                            message: "Course created successfully",
-                            userId: verified.id,
-                            course: course
-                        });
-                    });
-            })
-            .catch(error => {
-                res.status(500).json({
-                    success: false,
-                    message: "Error creating course",
-                    error: error.message
-                });
-            });
     } catch (error) {
-        res.status(401).json({ message: "Invalid token!" });
+        res.status(500).json({
+            success: false,
+            message: "Error creating course",
+            error: error.message
+        });
     }
 });
 
-router.delete('/courses/:courseId', (req, res) => {
-    const token = req.headers.authorization?.split(" ")[1];
-    if (!token) return res.status(401).json({ message: "No token provided!" });
-
+// Update a course (admin only)
+router.put("/updateCourse/:courseId", authenticateToken, async (req, res) => {
     try {
-        const verified = jwt.verify(token, process.env.JWT_SECRET);
-
-        User.findById(verified.id)
-            .then(user => {
-                if (!user) {
-                    return res.status(404).json({ message: "User not found!" });
-                }
-
-                if (user.type !== 'admin') {
-                    return res.status(403).json({
-                        success: false,
-                        message: "Access denied. Admin privileges required."
-                    });
-                }
-
-                return Course.findByIdAndDelete(req.params.courseId)
-                    .then(course => {
-                        if (!course) {
-                            return res.status(404).json({
-                                success: false,
-                                message: "Course not found"
-                            });
-                        }
-
-                        res.status(200).json({
-                            success: true,
-                            message: "Course deleted successfully",
-                            userId: verified.id,
-                            deletedCourse: course
-                        });
-                    });
-            })
-            .catch(error => {
-                res.status(500).json({
-                    success: false,
-                    message: "Error deleting course",
-                    error: error.message
-                });
-            });
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(404).json({ message: "User not found!" });
+        if (user.type !== "admin") {
+            return res.status(403).json({ message: "Access denied. Admin privileges required." });
+        }
+        const updatedCourse = await Course.findByIdAndUpdate(req.params.courseId, req.body, { new: true });
+        if (!updatedCourse) return res.status(404).json({ message: "Course not found" });
+        res.status(200).json({
+            success: true,
+            message: "Course updated successfully",
+            course: updatedCourse
+        });
     } catch (error) {
-        res.status(401).json({ message: "Invalid token!" });
+        res.status(500).json({ message: "Error updating course", error: error.message });
     }
 });
 
-// routes/course.js (or add a new endpoint)
-router.get('/course/:courseId', authenticateToken, async (req, res) => {
+// Delete a course (admin only)
+router.delete("/deleteCourse/:courseId", authenticateToken, async (req, res) => {
     try {
-        const course = await Course.findById(req.params.courseId);
+        const user = await User.findById(req.user.id);
+        if (!user) return res.status(404).json({ message: "User not found!" });
+        if (user.type !== "admin") {
+            return res.status(403).json({ message: "Access denied. Admin privileges required." });
+        }
+        const deletedCourse = await Course.findByIdAndDelete(req.params.courseId);
+        if (!deletedCourse) return res.status(404).json({ message: "Course not found" });
+        res.status(200).json({
+            success: true,
+            message: "Course deleted successfully",
+            deletedCourse
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Error deleting course", error: error.message });
+    }
+});
+
+
+router.get("/course/:courseId", authenticateToken, async (req, res) => {
+    try {
+        // Use .select("-subjects") to omit the nested course material
+        const course = await Course.findById(req.params.courseId).select("-subjects");
         if (!course) {
             return res.status(404).json({ message: "Course not found" });
         }
-
-        // Allow access if the user is an admin, or if the user is a student who has purchased the course
-        const user = await User.findById(req.user.id);
-        if (user.type === 'student' && !user.purchasedCourses.includes(course._id)) {
-            return res.status(403).json({ message: "Access denied. You have not purchased this course." });
-        }
-
         res.status(200).json({ course });
     } catch (error) {
         res.status(500).json({ message: "Error fetching course", error: error.message });
@@ -168,87 +153,48 @@ router.get('/course/:courseId', authenticateToken, async (req, res) => {
 });
 
 
-
-// Stream PDF securely
-router.get("/course/:courseId/pdf", authenticateToken, async (req, res) => {
+// Get all courses (for admin or for listing to students)
+router.get("/getAllCourses", authenticateToken, async (req, res) => {
     try {
-        const course = await Course.findById(req.params.courseId);
-        if (!course) return res.status(404).json({ message: "Course not found" });
-        const user = await User.findById(req.user.id);
-        if (user.type === "student" && !user.purchasedCourses.includes(course._id)) {
-            return res.status(403).json({ message: "Access denied. You have not purchased this course." });
+        const courses = await Course.find();
+        if (!courses.length) {
+            return res.status(404).json({ success: false, message: "No courses found" });
         }
-        if (process.env.NODE_ENV === "production") {
-            const s3 = new aws.S3({
-                accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-                secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-                region: process.env.AWS_REGION,
-            });
-            const params = {
-                Bucket: process.env.AWS_BUCKET_NAME,
-                Key: course.pdf, // Assuming you store the S3 key here
-            };
-            s3.getSignedUrl("getObject", params, (err, url) => {
-                if (err) {
-                    console.error(err);
-                    return res.status(500).json({ message: "Error generating signed URL" });
-                }
-                res.json({ url });
-            });
-        } else {
-            // Local file streaming
-            const filePath = path.join(__dirname, "../uploads/", course.pdf);
-            res.setHeader("Content-Type", "application/pdf");
-            res.setHeader("Content-Disposition", "inline");
-            fs.createReadStream(filePath).pipe(res);
-        }
+        res.status(200).json({
+            success: true,
+            count: courses.length,
+            courses
+        });
     } catch (error) {
-        res.status(500).json({ message: "Error streaming PDF", error: error.message });
+        res.status(500).json({
+            success: false,
+            message: "Server error occurred while fetching courses",
+            error: error.message
+        });
     }
 });
 
+/* =========================
+   VIEW COURSE CONTENT
+   ========================= */
 
-
-
-// Stream Audio securely
-router.get("/course/:courseId/audio", authenticateToken, async (req, res) => {
+// This endpoint returns the detailed content (subjects and chapters)
+// Only the admin or a student who has purchased the course can view it.
+router.get("/course/:courseId/content", authenticateToken, async (req, res) => {
     try {
-      const course = await Course.findById(req.params.courseId);
-      if (!course) return res.status(404).json({ message: "Course not found" });
-      const user = await User.findById(req.user.id);
-      if (user.type === "student" && !user.purchasedCourses.includes(course._id)) {
-        return res.status(403).json({ message: "Access denied. You have not purchased this course." });
-      }
-      if (process.env.NODE_ENV === "production") {
-        const s3 = new aws.S3({
-          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-          region: process.env.AWS_REGION,
-        });
-        const params = {
-          Bucket: process.env.AWS_BUCKET_NAME,
-          Key: course.audioFile,
-        };
-        s3.getSignedUrl("getObject", params, (err, url) => {
-          if (err) {
-            console.error(err);
-            return res.status(500).json({ message: "Error generating signed URL for audio" });
-          }
-          res.json({ url });
-        });
-      } else {
-        const filePath = path.join(__dirname, "../uploads/", course.audioFile);
-        res.setHeader("Content-Type", "audio/mpeg");
-        res.setHeader("Content-Disposition", "inline");
-        fs.createReadStream(filePath).pipe(res);
-      }
+        const course = await Course.findById(req.params.courseId);
+        if (!course) return res.status(404).json({ message: "Course not found" });
+
+        const user = await User.findById(req.user.id);
+        // Admin can view; students must have purchased the course.
+        if (user.type === "student" && !user.purchasedCourses.includes(course._id)) {
+            return res.status(403).json({ message: "Access denied. You have not purchased this course." });
+        }
+
+        res.status(200).json({ courseContent: course.subjects });
     } catch (error) {
-      res.status(500).json({ message: "Error streaming audio", error: error.message });
+        res.status(500).json({ message: "Error fetching course content", error: error.message });
     }
-  });
-
-
-  
-
+});
 
 module.exports = router;
