@@ -11,6 +11,9 @@ const passport = require('./config/passport');
 const adminRoutes = require("./routes/admin")
 const userRoutes = require("./routes/user");
 const transactionRoutes = require("./routes/transaction");
+const uploadRoutes = require("./routes/upload");
+const presignedUrlRoute = require("./routes/presignedUrl");
+
 
 const app = express();
 
@@ -27,6 +30,8 @@ app.use("/api/courses", courseRoutes);
 app.use("/api/admin", adminRoutes)
 app.use("/api/user", userRoutes);
 app.use("/api/transactions", transactionRoutes);
+app.use("/api/upload", uploadRoutes);
+app.use("/api/presigned-url", presignedUrlRoute);
 
 
 

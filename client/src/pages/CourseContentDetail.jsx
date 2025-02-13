@@ -1,144 +1,154 @@
-import React, { useState } from 'react';
-import './CourseContentDetail.css';
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import API from "../../api";
+import { PlayCircle, HelpCircle, FileText, Music } from "lucide-react";
 
-const chapters = [
-  { title: "Vector", emoji: "➡️" },
-  { title: "Units and Measurements", emoji: "📏" },
-  { title: "Motion in a Straight Line", emoji: "⬆️" },
-  { title: "Motion in a Plane", emoji: "↗️" },
-  { title: "Newton's Laws of Motion", emoji: "🏃" },
-  { title: "Work, Energy & Power", emoji: "⚡" },
-  { title: "Centre of Mass & System of Particles", emoji: "🎯" },
-  { title: "Rotational Motion", emoji: "🎡" },
-  { title: "Gravitation", emoji: "🌍" },
-  { title: "Mechanical Properties of Solids", emoji: "🧱" },
-  { title: "Mechanical Properties of Fluids", emoji: "💧" },
-  { title: "Thermal Properties of Matter", emoji: "🌡️" },
-  { title: "Kinetic Theory of Gases", emoji: "💨" },
-  { title: "Thermodynamics", emoji: "🔥" },
-  { title: "Oscillations", emoji: "↕️" },
-  { title: "Waves", emoji: "〰️" },
-  { title: "Electric Charges and Fields", emoji: "⚡" },
-  { title: "Electrostatic Potential", emoji: "🔋" },
-  { title: "Current Electricity", emoji: "💡" },
-  { title: "Moving Charges and Magnetism", emoji: "🧲" },
-  { title: "Magnetism and Matter", emoji: "🧲" },
-  { title: "Electromagnetic Induction", emoji: "⚡" },
-  { title: "Alternating Current", emoji: "↔️" },
-  { title: "Electromagnetic Waves", emoji: "📻" },
-  { title: "Ray Optics and Optical Instruments", emoji: "🔭" },
-  { title: "Wave Optics", emoji: "🔦" },
-  { title: "Dual Nature of Radiation and Matter", emoji: "🎭" },
-  { title: "Atoms", emoji: "⚛️" },
-  { title: "Nuclei", emoji: "☢️" },
-  { title: "Semiconductor Electronics", emoji: "🗄️" },
-];
+// Helper to extract S3 object key from full URL.
+// Assumes your S3 URL format is: https://{bucket}.s3.{region}.amazonaws.com/{key}
+const extractKeyFromUrl = (url) => {
+  const parts = url.split("/");
+  return parts.slice(3).join("/"); // joins everything after the bucket domain
+};
 
-const nestedDropdowns = [
-  { title: "Videos", badge: 3, items: ["Video 1", "Video 2", "Video 3"] },
-  { title: "Tests", badge: 2, items: ["Test 1", "Test 2"] },
-  { title: "Audio Books", badge: 1, items: ["Audio Book 1"] },
-];
+const CourseContentDetail = () => {
+  const { courseId, subjectId } = useParams();
+  const navigate = useNavigate();
+  const [subject, setSubject] = useState(null);
+  const [activeChapters, setActiveChapters] = useState({});
+  const [loading, setLoading] = useState(true);
 
-function CourseContentDetail() {
-  // Store which card is open (only one open at a time)
-  const [activeCard, setActiveCard] = useState(null);
-  // Store the active nested dropdown for each card (one per card)
-  const [activeNested, setActiveNested] = useState({});
-  // Search query for filtering chapters
-  const [searchQuery, setSearchQuery] = useState("");
+  // Function to fetch a presigned URL and open the file as a blob.
+  const handleOpenProtectedResource = async (resourceUrl, type) => {
+    try {
+      const token = localStorage.getItem("token");
+      const key = extractKeyFromUrl(resourceUrl);
 
-  const handleCardToggle = (index) => {
-    // Toggle the selected card and close any nested dropdowns
-    if (activeCard === index) {
-      setActiveCard(null);
-      setActiveNested((prev) => ({ ...prev, [index]: null }));
-    } else {
-      setActiveCard(index);
-      setActiveNested((prev) => ({ ...prev, [index]: null }));
+      // Call backend to get a presigned URL using the updated base path
+      const presignedResponse = await API.get(
+        `presigned-url/presigned-url?key=${encodeURIComponent(key)}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const signedUrl = presignedResponse.data.url;
+
+      // Fetch the file using the presigned URL and convert it into a blob.
+      const response = await fetch(signedUrl);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      window.open(blobUrl, "_blank");
+    } catch (error) {
+      console.error("Error opening protected resource:", error);
     }
   };
 
-  const handleNestedToggle = (cardIndex, nestedIndex, event) => {
-    // Prevent the card from toggling when clicking a nested header
-    event.stopPropagation();
-    setActiveNested((prev) => ({
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    // Fetch course content including all subjects using the proper endpoint
+    API.get(`/courses/course/${courseId}/content`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => {
+        // Expected response: { courseContent: [ { _id, subjectName, chapters: [...] }, ... ] }
+        const subjects = res.data.courseContent;
+        const foundSubject = subjects.find((subj) => subj._id === subjectId);
+        setSubject(foundSubject);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching course content:", err);
+        setLoading(false);
+      });
+  }, [courseId, subjectId]);
+
+  const toggleChapter = (index) => {
+    setActiveChapters((prev) => ({
       ...prev,
-      [cardIndex]:
-        prev[cardIndex] === nestedIndex ? null : nestedIndex,
+      [index]: !prev[index],
     }));
   };
 
-  // Filter chapters based on the search query
-  const filteredChapters = chapters.filter((chapter) =>
-    chapter.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <p className="text-white text-xl">Loading subject content...</p>
+      </div>
+    );
+  }
+
+  if (!subject) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <p className="text-white text-xl">Subject not found.</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="container">
-      <div className="header">
-        <button className="back-button" onClick={() => window.history.back()}>
+    <div className="min-h-screen w-screen pt-250 bg-gray-900 text-white p-8">
+      {/* Header */}
+      <div className="max-w-7xl mx-auto mb-8 flex items-center justify-between">
+        <h1 className="text-4xl font-bold">{subject.subjectName}</h1>
+        <button
+          onClick={() => navigate(-1)}
+          className="bg-red-600 hover:bg-red-700 transition px-4 py-2 rounded"
+        >
           ← Back
         </button>
-        <h1>Physics Chapters</h1>
       </div>
-
-      <div className="search-container">
-        <input
-          type="text"
-          className="search-input"
-          placeholder="Search chapters..."
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-      </div>
-
-      <div className="grid">
-        {filteredChapters.map((chapter, index) => (
-          <div className="card-wrapper" key={index}>
-            <div
-              className={`card ${activeCard === index ? "active" : ""}`}
-              data-title={chapter.title}
-            >
-              <div
-                className="card-header"
-                onClick={() => handleCardToggle(index)}
-              >
-                <div className="icon">{chapter.emoji}</div>
-                <h3 className="title">{chapter.title}</h3>
-              </div>
-              <div className="card-content">
-                {nestedDropdowns.map((dropdown, dIndex) => (
-                  <div
-                    className={`nested-dropdown ${
-                      activeNested[index] === dIndex ? "active" : ""
-                    }`}
-                    key={dIndex}
-                  >
-                    <div
-                      className="nested-header"
-                      onClick={(e) =>
-                        handleNestedToggle(index, dIndex, e)
-                      }
-                    >
-                      {dropdown.title}{" "}
-                      <span className="badge">{dropdown.badge}</span>
-                    </div>
-                    <div className="nested-content">
-                      {dropdown.items.map((item, i) => (
-                        <div className="nested-item" key={i}>
-                          {item}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
+      
+      {/* Chapters Grid */}
+      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {subject.chapters.map((chapter, index) => (
+          <div
+            key={index}
+            className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden transition-all duration-300 ease-in-out cursor-pointer"
+            onClick={() => toggleChapter(index)}
+          >
+            <div className="p-4 flex justify-between items-center">
+              <span className="text-lg font-medium">{chapter.chapterName}</span>
+              <span className="text-2xl">{activeChapters[index] ? "-" : "+"}</span>
             </div>
+            {activeChapters[index] && (
+              <div className="px-4 pb-4 border-t border-gray-700 flex flex-col space-y-2 opacity-100 transition-opacity duration-300">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleOpenProtectedResource(chapter.pdfLink, "pdf");
+                  }}
+                  className="flex items-center gap-2 bg-red-600 hover:bg-red-700 transition px-3 py-1 rounded"
+                >
+                  <FileText size={20} />
+                  PDF
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleOpenProtectedResource(chapter.audioLink, "audio");
+                  }}
+                  className="flex items-center gap-2 bg-red-600 hover:bg-red-700 transition px-3 py-1 rounded"
+                >
+                  <Music size={20} />
+                  Audio Book
+                </button>
+                <button className="flex items-center gap-2 bg-red-600 hover:bg-red-700 transition px-3 py-1 rounded">
+                  <PlayCircle size={20} />
+                  Play Video
+                </button>
+                <button className="flex items-center gap-2 bg-red-600 hover:bg-red-700 transition px-3 py-1 rounded">
+                  <HelpCircle size={20} />
+                  Quiz
+                </button>
+              </div>
+            )}
           </div>
         ))}
       </div>
     </div>
   );
-}
+};
 
 export default CourseContentDetail;

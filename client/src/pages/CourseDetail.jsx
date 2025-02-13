@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../../api";
 import axios from "axios";
+import { Lock } from "lucide-react";
 
 // Helper to get Razorpay key from environment variables (for Vite/CRA)
 const getRazorpayKey = () => {
@@ -153,10 +154,12 @@ function CourseDetail() {
                     <ul className="learn-list">
                       {course.includedAssets &&
                         course.includedAssets.map((asset, index) => (
-                          <li key={index}>
-                            <a href="#">
+                          <li key={index} className="">
+                            <a href="#" className="!flex align-items-center gap-2">
                               <span className="play-video">
-                                <img src="assets/img/icon/video-player.svg" alt="asset" />
+                                {/* Lock Icon */}
+                                <Lock />
+                                {/* <img src="https://cdn.iconscout.com/icon/free/png-256/free-lock-icon-download-in-svg-png-gif-file-formats--open-unlocked-user-interface-pack-icons-83536.png" alt="asset" /> */}
                               </span>
                               {asset}
                             </a>

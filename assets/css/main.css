@@ -48,7 +48,6 @@ body {
   line-height: 25px;
   font-weight: 400;
   font-style: normal;
-  color: #c6c6c4;
 }
 
 .f-left {
@@ -107,7 +106,6 @@ h4,
 h5,
 h6 {
   font-family: "Manrope", sans-serif;
-  color: #c6c6c4;
   line-height: 1.1;
   margin-top: 0px;
   margin-bottom: 0;
@@ -4564,7 +4562,6 @@ input.main-search-input:-ms-input-placeholder {
 }
 
 .course__cat__list li a {
-  color: #c6c6c4;
   font-size: 20px;
   font-weight: 600;
   line-height: 1;
@@ -5231,7 +5228,6 @@ input.main-search-input:-ms-input-placeholder {
 }
 
 .courses-item li {
-  color: #c6c6c4;
   font-size: 18px;
   margin-bottom: 30px;
 }

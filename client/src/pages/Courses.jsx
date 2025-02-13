@@ -94,7 +94,7 @@ function Courses() {
                       <Link to={`/course/${course._id}`}>
                         <img
                           className="img-fluid"
-                          src="assets/img/course/01.png"
+                          src="https://foundr.com/wp-content/uploads/2021/09/Best-online-course-platforms.png"
                           alt={course.courseName}
                         />
                       </Link>
@@ -104,7 +104,7 @@ function Courses() {
                       </div>
                     </div>
                     <div className="z-gallery__content">
-                      <div className="course__tag mb-15">
+                      {/* <div className="course__tag mb-15">
                         {course.includedAssets &&
                           course.includedAssets.slice(0, 2).map((asset, i) => (
                             <span key={i}>{asset}</span>
@@ -112,9 +112,9 @@ function Courses() {
                         <a className="f-right" href="instructor-details.html">
                           <img src="assets/img/course/in1.png" alt="instructor" />
                         </a>
-                      </div>
-                      <h4 className="sub-title mb-20">
-                        <Link to={`/course/${course._id}`}>
+                      </div> */}
+                      <h4 className=" mb-20">
+                        <Link to={`/course/${course._id}`} className="!text-2xl !font-bold !text-red-800">
                           {course.courseName}
                         </Link>
                       </h4>
@@ -129,9 +129,10 @@ function Courses() {
                           <img className="icon" src="assets/img/icon/user.svg" alt="course-meta" /> 6395+
                         </span>
                       </div>
-                      <div className="course__price mt-2">
-                        <span>₹{course.originalPrice}</span>
-                        <b className="sub-title">₹{course.discountPrice} 🎉</b>
+                      <div className="flex mt-2">
+                        <span className="line-through">
+                          ₹{course.originalPrice}</span>
+                        <h4 className="!text-2xl !text-red-950">₹{course.discountPrice} 🎉</h4>
                       </div>
                     </div>
                   </div>

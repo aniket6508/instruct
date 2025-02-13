@@ -35,12 +35,12 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen w-screen w-full pt-150 w-full flex items-center justify-center bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
+    <div className="min-h-screen w-screen w-full pt-250 w-full flex items-center justify-center bg-transparent">
       <div className="relative w-full max-w-md mx-4">
         {/* Decorative Elements */}
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-blue-600/20 transform rotate-12 rounded-3xl blur-3xl" />
+        <div className="absolute inset-0  transform rotate-12 rounded-3xl blur-3xl" />
         
-        <div className="relative bg-gray-800/80 backdrop-blur-xl p-8 rounded-2xl shadow-2xl border border-gray-700/50">
+        <div className="relative  p-8 rounded-2xl shadow-2xl border border-gray-700/50">
           <div className="mb-8 text-center">
             <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
               <User size={32} className="text-white" />
@@ -105,14 +105,14 @@ function Login() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-2.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white text-sm font-semibold
+              className="w-full py-2.5 bg-red-900  text-white text-sm font-semibold
                        rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-200
                        focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:ring-offset-1 
                        focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed
                        flex items-center justify-center gap-2"
             >
               {isLoading ? (
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 bg-red-900  border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
                 <>
                   <LogIn size={18} />

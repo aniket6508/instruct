@@ -10,12 +10,9 @@ function AdminPage() {
   const [transactionCount, setTransactionCount] = useState(0);
   const [transactions, setTransactions] = useState([]);
   const [activeTab, setActiveTab] = useState("course"); // "course" or "admin"
-  // New state for course view mode: "add", "list", "edit", or "transactions"
-  const [courseViewMode, setCourseViewMode] = useState("add");
-  // List of courses when in list mode
+  const [courseViewMode, setCourseViewMode] = useState("add"); // "add", "list", "edit", or "transactions"
   const [courses, setCourses] = useState([]);
 
-  // Course form state for new course details (or editing)
   const [courseForm, setCourseForm] = useState({
     courseName: "",
     description: "",
@@ -26,22 +23,18 @@ function AdminPage() {
     discountPrice: "",
     promocode: ""
   });
-  
-  // Dynamic subjects state (each with chapters)
+
   const [subjects, setSubjects] = useState([]);
-  
-  // For edit mode, store the _id of the course being edited
   const [editingCourseId, setEditingCourseId] = useState(null);
-  
-  // Admin creation form state
+
   const [adminForm, setAdminForm] = useState({
     name: "",
     email: "",
     password: ""
   });
-  
+
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userType = localStorage.getItem("userType");
@@ -49,11 +42,11 @@ function AdminPage() {
       navigate("/");
     }
   }, [navigate]);
-  
+
   useEffect(() => {
     fetchStats();
   }, []);
-  
+
   const fetchStats = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -71,7 +64,6 @@ function AdminPage() {
     }
   };
 
-  // Fetch courses for list view
   const fetchCourses = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -87,7 +79,6 @@ function AdminPage() {
     }
   };
 
-  // Fetch transactions from backend
   const fetchTransactions = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -104,23 +95,48 @@ function AdminPage() {
     }
   };
 
+  // Upload file and update the respective chapter field (pdfLink or audioLink)
+  const handleFileUpload = async (subjIndex, chapIndex, field, file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await API.post("/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.data.success) {
+        // Update the chapter field with the returned S3 URL.
+        handleChapterChange(subjIndex, chapIndex, field, res.data.url);
+        toast.success("File uploaded successfully");
+      } else {
+        toast.error("File upload failed");
+      }
+    } catch (error) {
+      console.error("File upload error:", error);
+      toast.error("Error uploading file");
+    }
+  };
+
   // Functions for managing subjects and chapters dynamically
   const addSubject = () => {
     setSubjects([...subjects, { subjectName: "", chapters: [] }]);
   };
-  
+
   const removeSubject = (index) => {
     const newSubjects = [...subjects];
     newSubjects.splice(index, 1);
     setSubjects(newSubjects);
   };
-  
+
   const handleSubjectNameChange = (index, value) => {
     const newSubjects = [...subjects];
     newSubjects[index].subjectName = value;
     setSubjects(newSubjects);
   };
-  
+
   const addChapter = (subjectIndex) => {
     const newSubjects = [...subjects];
     newSubjects[subjectIndex].chapters.push({
@@ -132,25 +148,23 @@ function AdminPage() {
     });
     setSubjects(newSubjects);
   };
-  
+
   const removeChapter = (subjectIndex, chapterIndex) => {
     const newSubjects = [...subjects];
     newSubjects[subjectIndex].chapters.splice(chapterIndex, 1);
     setSubjects(newSubjects);
   };
-  
+
   const handleChapterChange = (subjectIndex, chapterIndex, field, value) => {
     const newSubjects = [...subjects];
     newSubjects[subjectIndex].chapters[chapterIndex][field] = value;
     setSubjects(newSubjects);
   };
-  
-  // Add new course submission
+
   const handleCourseSubmit = async (e) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      // Prepare course data converting comma-separated strings into arrays.
       const courseData = {
         ...courseForm,
         includedAssets: courseForm.includedAssets.split(",").map((s) => s.trim()),
@@ -191,8 +205,7 @@ function AdminPage() {
       toast.error("Error adding/updating course.");
     }
   };
-  
-  // Admin creation submission
+
   const handleAdminSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -211,27 +224,24 @@ function AdminPage() {
       toast.error("Error creating admin.");
     }
   };
-  
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userType");
     toast.success("Logged out!");
     navigate("/login");
   };
-  
-  // Switch to courses list view.
+
   const handleViewCourses = () => {
     setCourseViewMode("list");
     fetchCourses();
   };
 
-  // Switch to transactions view.
   const handleViewTransactions = () => {
     setCourseViewMode("transactions");
     fetchTransactions();
   };
-  
-  // When admin clicks Edit on a course, load that course's details.
+
   const handleEditCourse = (course) => {
     setCourseForm({
       courseName: course.courseName,
@@ -247,8 +257,7 @@ function AdminPage() {
     setEditingCourseId(course._id);
     setCourseViewMode("edit");
   };
-  
-  // Delete a course.
+
   const handleDeleteCourse = async (courseId) => {
     try {
       const token = localStorage.getItem("token");
@@ -267,8 +276,7 @@ function AdminPage() {
       toast.error("Error deleting course.");
     }
   };
-  
-  // Cancel editing and return to courses list view.
+
   const cancelEdit = () => {
     setCourseForm({
       courseName: "",
@@ -284,9 +292,9 @@ function AdminPage() {
     setEditingCourseId(null);
     setCourseViewMode("list");
   };
-  
+
   return (
-    <div className="min-h-screen w-screen bg-gray-100 pt-10 p-8">
+    <div className="min-h-screen w-screen bg-transparent pt-10 p-8">
       {/* Navbar */}
       <nav className="shadow-md px-6 py-4 flex justify-between items-center bg-white mb-8">
         <h1 className="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
@@ -295,7 +303,7 @@ function AdminPage() {
           Logout
         </button>
       </nav>
-  
+
       <div className="container mx-auto px-6 py-8">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -333,7 +341,7 @@ function AdminPage() {
             </div>
           </div>
         </div>
-  
+
         {/* Tabs */}
         <div className="flex gap-4 mb-6">
           <button
@@ -354,7 +362,7 @@ function AdminPage() {
             Create Admin
           </button>
         </div>
-  
+
         {/* Main Content: Course Form / List / Edit / Transactions */}
         {activeTab === "course" && (
           <>
@@ -399,7 +407,7 @@ function AdminPage() {
                 </div>
               </>
             )}
-  
+
             {(courseViewMode === "add" || courseViewMode === "edit") && (
               <>
                 <h2 className="text-xl font-semibold text-black mb-6">
@@ -485,7 +493,7 @@ function AdminPage() {
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
-                  {/* Subjects and Chapters Dynamic Section */}
+                  {/* Subjects and Chapters Section */}
                   <div className="mt-4">
                     <h3 className="text-lg font-semibold text-gray-800 mb-2">Subjects</h3>
                     {subjects.map((subject, subjIndex) => (
@@ -520,27 +528,31 @@ function AdminPage() {
                                 onChange={(e) => handleChapterChange(subjIndex, chapIndex, "quizLink", e.target.value)}
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mb-1"
                               />
+
+                              {/* Upload PDF */}
+                              <label className="block text-sm font-medium text-gray-700 mb-1">Upload PDF</label>
                               <input
-                                type="text"
-                                placeholder="Audio Link"
-                                value={chapter.audioLink}
-                                onChange={(e) => handleChapterChange(subjIndex, chapIndex, "audioLink", e.target.value)}
+                                type="file"
+                                onChange={(e) => {
+                                  if (e.target.files[0]) {
+                                    handleFileUpload(subjIndex, chapIndex, "pdfLink", e.target.files[0]);
+                                  }
+                                }}
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mb-1"
                               />
+
+                              {/* Upload Audio */}
+                              <label className="block text-sm font-medium text-gray-700 mb-1">Upload Audio</label>
                               <input
-                                type="text"
-                                placeholder="PDF Link"
-                                value={chapter.pdfLink}
-                                onChange={(e) => handleChapterChange(subjIndex, chapIndex, "pdfLink", e.target.value)}
+                                type="file"
+                                onChange={(e) => {
+                                  if (e.target.files[0]) {
+                                    handleFileUpload(subjIndex, chapIndex, "audioLink", e.target.files[0]);
+                                  }
+                                }}
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mb-1"
                               />
-                              <input
-                                type="text"
-                                placeholder="Video Link"
-                                value={chapter.videoLink}
-                                onChange={(e) => handleChapterChange(subjIndex, chapIndex, "videoLink", e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mb-1"
-                              />
+
                               <button onClick={() => removeChapter(subjIndex, chapIndex)} type="button" className="text-red-500 hover:text-red-700">
                                 Remove Chapter
                               </button>
@@ -570,7 +582,7 @@ function AdminPage() {
                 </form>
               </>
             )}
-  
+
             {courseViewMode === "transactions" && (
               <>
                 <h2 className="text-xl font-semibold text-black mb-4">Transactions List</h2>
@@ -607,7 +619,7 @@ function AdminPage() {
             )}
           </>
         )}
-  
+
         {activeTab === "admin" && (
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold text-gray-800 mb-6">Create New Admin</h2>

@@ -26,10 +26,10 @@ function Register() {
   };
 
   return (
-    <div className="min-h-screen w-screen pt-150 flex items-center justify-center bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
+    <div className="min-h-screen w-screen pt-250 flex items-center justify-center bg-transparent">
       <div className="relative w-full max-w-md mx-4">
         {/* Decorative Elements */}
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/20 to-blue-600/20 transform -rotate-12 rounded-3xl blur-3xl" />
+        <div className="absolute inset-0" />
         
         <div className="relative bg-gray-800/80 backdrop-blur-xl p-8 rounded-2xl shadow-2xl border border-gray-700/50">
           <div className="mb-8 text-center">
