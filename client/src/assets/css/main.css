@@ -2973,12 +2973,12 @@ input.main-search-input:-ms-input-placeholder {
 #videop {
   border-radius: 200px;
   margin-left: 50px;
-  margin-bottom: 70px;
+  padding-bottom: 70px;
 }}
 
 .slider__img__box .slide-shape.img-two {
   right: 68px;
-  bottom: -25px;
+  bottom: 15px;
   -webkit-animation: float-bob-y infinite 4s alternate;
           animation: float-bob-y infinite 4s alternate;
 }
@@ -7799,7 +7799,11 @@ input.main-search-input:-ms-input-placeholder {
   line-height: 59px;
   margin-right: 30px;
   display: inline-block;
-  float: left;}
+  float: left;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 @media (max-width: 767px) {
   .single-contact-box .contact__iocn {

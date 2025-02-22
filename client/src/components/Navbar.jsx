@@ -176,7 +176,7 @@ function Navbar() {
                                 marginBottom: "0.5rem",
                               }}
                             >
-                              Edit Profile
+                            Profile
                             </button>
                             <button
                               onClick={handleLogout}

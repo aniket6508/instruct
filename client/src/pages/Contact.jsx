@@ -56,7 +56,7 @@ function Contact() {
                                     </div>
                                     <div className="single-contact-box cb-2 mb-30">
                                         <div className="contact__iocn">
-                                            <img src="assets/img/icon/phone-alt.svg" alt="" />
+                                        <img src="assets/img/icon/phone-alt.svg" alt=""/>
                                         </div>
                                         <div className="contact__text">
                                             <h5>+91 7988760028 </h5>

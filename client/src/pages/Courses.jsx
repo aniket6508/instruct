@@ -98,7 +98,6 @@ function Courses() {
                           alt={course.courseName}
                         />
                       </Link>
-                      <div className="feedback-tag">4.8(256)</div>
                       <div className="heart-icon">
                         <i className="fas fa-heart" />
                       </div>
@@ -118,17 +117,7 @@ function Courses() {
                           {course.courseName}
                         </Link>
                       </h4>
-                      <div className="course__meta">
-                        <span>
-                          <img className="icon" src="assets/img/icon/time.svg" alt="course-meta" /> 12 Class
-                        </span>
-                        <span>
-                          <img className="icon" src="assets/img/icon/bar-chart.svg" alt="course-meta" /> Higher
-                        </span>
-                        <span>
-                          <img className="icon" src="assets/img/icon/user.svg" alt="course-meta" /> 6395+
-                        </span>
-                      </div>
+                  
                       <div className="flex mt-2">
                         <span className="line-through">
                           ₹{course.originalPrice}</span>

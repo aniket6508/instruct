@@ -56,7 +56,7 @@ const CourseContent = () => {
               <a
                 key={index}
                 href={`/course-content-detail/${courseId}/${subject._id}`}
-                className="card p-4 bg-dark border border-gray-700 rounded shadow-lg hover:shadow-xl transition"
+                className="card p-4 bg-dark border border-gray-700 rounded-3 shadow-lg hover:shadow-xl transition"
               >
                 <div className="card-content flex flex-col items-center">
                   <div className="card-icon text-5xl mb-4 text-blue-400">

@@ -184,53 +184,53 @@ const CourseContentDetail = () => {
 
       {/* Chapters Grid */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {subject.chapters.map((chapter, index) => (
-          <div
-            key={index}
-            className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden transition-all duration-300 ease-in-out cursor-pointer"
-            onClick={() => toggleChapter(index)}
-          >
-            <div className="p-4 flex justify-between items-center">
-              <span className="text-lg font-medium">{chapter.chapterName}</span>
-              <span className="text-2xl">
-                {activeChapters[index] ? "-" : "+"}
-              </span>
-            </div>
-            {activeChapters[index] && (
-              <div className="px-4 pb-4 border-t border-gray-700 flex flex-col space-y-2">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleOpenProtectedResource(chapter.pdfLink, "pdf");
-                  }}
-                  className="flex items-center gap-2 bg-red-600 hover:bg-red-700 transition px-3 py-1 rounded"
-                >
-                  <FileText size={20} />
-                  PDF
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleOpenProtectedResource(chapter.audioLink, "audio");
-                  }}
-                  className="flex items-center gap-2 bg-red-600 hover:bg-red-700 transition px-3 py-1 rounded"
-                >
-                  <Music size={20} />
-                  Audio Book
-                </button>
-                <button className="flex items-center gap-2 bg-red-600 hover:bg-red-700 transition px-3 py-1 rounded">
-                  <PlayCircle size={20} />
-                  Play Video
-                </button>
-                <button className="flex items-center gap-2 bg-red-600 hover:bg-red-700 transition px-3 py-1 rounded">
-                  <HelpCircle size={20} />
-                  Quiz
-                </button>
-              </div>
-            )}
-          </div>
-        ))}
+  {subject.chapters.map((chapter, index) => (
+    <div
+      key={index}
+      className="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden transition-all duration-300 ease-in-out cursor-pointer"
+      onClick={() => toggleChapter(index)}
+    >
+      <div className="p-4 flex justify-between items-center">
+        <span className="text-lg font-medium text-white">{chapter.chapterName}</span>
+        <span className="text-2xl text-white">
+          {activeChapters[index] ? "-" : "+"}
+        </span>
       </div>
+      {activeChapters[index] && (
+        <div className="px-4 pb-4 border-t border-gray-700 flex flex-col space-y-3">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleOpenProtectedResource(chapter.pdfLink, "pdf");
+            }}
+            className="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 transition px-4 py-2 rounded-lg text-white font-medium shadow-md"
+          >
+            <FileText size={22} />
+            <span>PDF</span>
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleOpenProtectedResource(chapter.audioLink, "audio");
+            }}
+            className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-light transition px-4 py-2 rounded-lg text-white font-medium shadow-md"
+          >
+            <Music size={22} />
+            <span>Audio Book</span>
+          </button>
+          <button className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 transition px-4 py-2 rounded-lg text-white font-medium shadow-md">
+            <PlayCircle size={22} />
+            <span>Play Video</span>
+          </button>
+          <button className="flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 transition px-4 py-2 rounded-lg text-white font-medium shadow-md">
+            <HelpCircle size={22} />
+            <span>Quiz</span>
+          </button>
+        </div>
+      )}
+    </div>
+  ))}
+</div>
 
       {/* PDF Viewer Modal */}
       {pdfViewerUrl && (
@@ -241,7 +241,7 @@ const CourseContentDetail = () => {
           className="fixed pt-250 inset-0 flex items-center justify-center p-4 z-50"
           overlayClassName="fixed inset-0 bg-black bg-opacity-75 z-40"
         >
-          <div className="bg-white rounded-lg w-full max-w-6xl max-h-[90vh] overflow-auto p-6">
+          <div className=" bg-dark rounded-lg w-full max-w-6xl max-h-[90vh] overflow-auto p-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-gray-800">PDF Viewer</h2>
               <button
@@ -306,7 +306,7 @@ const CourseContentDetail = () => {
           className="fixed pt-250 inset-0 flex items-center justify-center p-4 z-50"
           overlayClassName="fixed inset-0 bg-black bg-opacity-75 z-40"
         >
-          <div className="bg-white rounded-lg w-full max-w-2xl p-6">
+          <div className="bg-dark rounded-lg w-full max-w-2xl p-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-gray-800">Audio Player</h2>
               <button
