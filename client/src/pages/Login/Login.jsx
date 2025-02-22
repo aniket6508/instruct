@@ -41,14 +41,14 @@ function Login({ onSuccess, onRegisterClick }) {
   };
 
   return (
-    <div className="min-h-auto w-full max-w-md">
+    <div className="min-h-auto w-full max-w-md overflow-hidden bg-dark rounded-2xl shadow-lg">
       <div className="relative">
         {/* Decorative Elements */}
         <div className="absolute inset-0 transform rotate-12 rounded-3xl blur-3xl" />
         
         <div className="relative p-8 rounded-2xl shadow-2xl border border-gray-700/50 bg-gray-800">
           <div className="mb-8 text-center">
-            <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <div className="w-16 h-16 bg-gradient-to-br from-yellow-100 to-yellow-800 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
               <User size={32} className="text-white" />
             </div>
             <h1 className="text-3xl font-bold text-white bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-400">
@@ -66,9 +66,10 @@ function Login({ onSuccess, onRegisterClick }) {
                   Email Address
                 </label>
                 <div className="relative">
+                { form.email === "" && (
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Mail size={18} className="text-gray-500" />
-                  </div>
+                  </div> )}
                   <input
                     type="email"
                     id="email"
@@ -78,7 +79,7 @@ function Login({ onSuccess, onRegisterClick }) {
                     className="w-full pl-10 pr-4 py-2.5 bg-gray-900/50 border border-gray-700 text-gray-100 rounded-xl
                              focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500
                              placeholder-gray-500 transition-all duration-200"
-                    placeholder="Enter your email"
+                    placeholder="___Enter your email"
                     required
                   />
                 </div>
@@ -89,9 +90,11 @@ function Login({ onSuccess, onRegisterClick }) {
                   Password
                 </label>
                 <div className="relative">
+                { form.password === "" &&(
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Lock size={18} className="text-gray-500" />
                   </div>
+                )}
                   <input
                     type="password"
                     id="password"
@@ -101,7 +104,7 @@ function Login({ onSuccess, onRegisterClick }) {
                     className="w-full pl-10 pr-4 py-2.5 bg-gray-900/50 border border-gray-700 text-gray-100 rounded-xl
                              focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500
                              placeholder-gray-500 transition-all duration-200"
-                    placeholder="Enter your password"
+                    placeholder="___Enter your password"
                     required
                   />
                 </div>
