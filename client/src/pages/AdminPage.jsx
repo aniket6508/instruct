@@ -2,7 +2,17 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../../api";
 import { toast } from "react-hot-toast";
-import { Users, BookOpen, LogOut, Plus, User, CreditCard } from "lucide-react";
+import {
+  Users,
+  BookOpen,
+  LogOut,
+  Plus,
+  User,
+  CreditCard,
+  Home,
+  Settings,
+  Bell
+} from "lucide-react";
 
 function AdminPage() {
   const [userCount, setUserCount] = useState(0);
@@ -12,7 +22,6 @@ function AdminPage() {
   const [activeTab, setActiveTab] = useState("course"); // "course" or "admin"
   const [courseViewMode, setCourseViewMode] = useState("add"); // "add", "list", "edit", or "transactions"
   const [courses, setCourses] = useState([]);
-
   const [courseForm, setCourseForm] = useState({
     courseName: "",
     description: "",
@@ -23,10 +32,8 @@ function AdminPage() {
     discountPrice: "",
     promocode: ""
   });
-
   const [subjects, setSubjects] = useState([]);
   const [editingCourseId, setEditingCourseId] = useState(null);
-
   const [adminForm, setAdminForm] = useState({
     name: "",
     email: "",
@@ -108,7 +115,6 @@ function AdminPage() {
         },
       });
       if (res.data.success) {
-        // Update the chapter field with the returned S3 URL.
         handleChapterChange(subjIndex, chapIndex, field, res.data.url);
         toast.success("File uploaded successfully");
       } else {
@@ -294,49 +300,58 @@ function AdminPage() {
   };
 
   return (
-    <div className="min-h-screen w-screen bg-transparent pt-10 p-8">
+    <div className="min-h-screen w-screen  pt-10 p-8 text-white">
       {/* Navbar */}
-      <nav className="shadow-md px-6 py-4 flex justify-between items-center bg-white mb-8">
-        <h1 className="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
-        <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
-          <LogOut size={20} />
-          Logout
-        </button>
+      <nav className="shadow-md px-6 py-4 flex justify-between items-center bg-gray-800 mb-8">
+        <div className="flex items-center gap-2">
+          <Home size={24} className="text-white" />
+          <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+        </div>
+        <div className="flex items-center gap-4">
+          <Bell size={20} className="text-white" />
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+          >
+            <LogOut size={20} />
+            Logout
+          </button>
+        </div>
       </nav>
 
       <div className="container mx-auto px-6 py-8">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="border rounded-lg shadow-md p-6">
+          <div className="border border-gray-700 rounded-lg shadow-md p-6 bg-gray-800">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-blue-100 rounded-full">
-                <Users className="w-6 h-6 text-blue-600" />
-              </div>
+              <Users className="w-6 h-6 text-blue-400" />
               <div>
-                <p className="text-sm text-gray-600">Total Users</p>
-                <h3 className="text-2xl font-bold text-gray-800">{userCount}</h3>
+                <p className="text-sm text-gray-300">Total Users</p>
+                <h3 className="text-2xl font-bold">{userCount}</h3>
               </div>
             </div>
           </div>
-          <div onClick={handleViewCourses} className="cursor-pointer border rounded-lg shadow-md p-6 hover:bg-gray-50 transition-colors">
+          <div
+            onClick={handleViewCourses}
+            className="cursor-pointer border border-gray-700 rounded-lg shadow-md p-6 bg-gray-800 hover:bg-gray-700 transition-colors"
+          >
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-green-100 rounded-full">
-                <BookOpen className="w-6 h-6 text-green-600" />
-              </div>
+              <BookOpen className="w-6 h-6 text-green-400" />
               <div>
-                <p className="text-sm text-gray-600">Total Courses</p>
-                <h3 className="text-2xl font-bold text-gray-800">{courseCount}</h3>
+                <p className="text-sm text-gray-300">Total Courses</p>
+                <h3 className="text-2xl font-bold">{courseCount}</h3>
               </div>
             </div>
           </div>
-          <div onClick={handleViewTransactions} className="cursor-pointer border rounded-lg shadow-md p-6 hover:bg-gray-50 transition-colors">
+          <div
+            onClick={handleViewTransactions}
+            className="cursor-pointer border border-gray-700 rounded-lg shadow-md p-6 bg-gray-800 hover:bg-gray-700 transition-colors"
+          >
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-yellow-100 rounded-full">
-                <CreditCard className="w-6 h-6 text-yellow-600" />
-              </div>
+              <CreditCard className="w-6 h-6 text-yellow-400" />
               <div>
-                <p className="text-sm text-gray-600">Total Transactions</p>
-                <h3 className="text-2xl font-bold text-gray-800">{transactionCount}</h3>
+                <p className="text-sm text-gray-300">Total Transactions</p>
+                <h3 className="text-2xl font-bold">{transactionCount}</h3>
               </div>
             </div>
           </div>
@@ -349,17 +364,39 @@ function AdminPage() {
               setActiveTab("course");
               setCourseViewMode("add");
             }}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${activeTab === "course" && courseViewMode === "add" ? "bg-blue-500 text-black" : "bg-white text-gray-700 hover:bg-gray-50"}`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+              activeTab === "course" && courseViewMode === "add"
+                ? "bg-blue-500 text-black"
+                : "bg-gray-700 text-white hover:bg-gray-600"
+            }`}
           >
             <Plus size={20} />
             Add Course
           </button>
           <button
             onClick={() => setActiveTab("admin")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${activeTab === "admin" ? "bg-blue-500 text-black" : "bg-white text-gray-700 hover:bg-gray-50"}`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+              activeTab === "admin"
+                ? "bg-blue-500 text-black"
+                : "bg-gray-700 text-white hover:bg-gray-600"
+            }`}
           >
             <User size={20} />
             Create Admin
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab("course");
+              setCourseViewMode("list");
+            }}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+              courseViewMode === "list"
+                ? "bg-blue-500 text-black"
+                : "bg-gray-700 text-white hover:bg-gray-600"
+            }`}
+          >
+            <Settings size={20} />
+            Courses List
           </button>
         </div>
 
@@ -368,30 +405,63 @@ function AdminPage() {
           <>
             {courseViewMode === "list" && (
               <>
-                <h2 className="text-xl font-semibold text-black mb-4">Courses List</h2>
+                <h2 className="text-xl font-semibold mb-4">Courses List</h2>
                 {courses.length ? (
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                  <table className="min-w-full divide-y divide-gray-700">
+                    <thead className="bg-gray-800">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course Name</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Intro Video</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Original Price</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Discount Price</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                          Course Name
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                          Intro Video
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                          Original Price
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                          Discount Price
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                          Actions
+                        </th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-gray-900 divide-y divide-gray-700">
                       {courses.map((course) => (
                         <tr key={course._id}>
-                          <td className="px-6 py-4 whitespace-nowrap">{course.courseName}</td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <a href={course.introVideo} target="_blank" rel="noreferrer" className="text-blue-500 hover:underline">View</a>
+                            {course.courseName}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">{course.originalPrice}</td>
-                          <td className="px-6 py-4 whitespace-nowrap">{course.discountPrice}</td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <button onClick={() => handleEditCourse(course)} className="text-green-500 hover:text-green-700 mr-2">Edit</button>
-                            <button onClick={() => handleDeleteCourse(course._id)} className="text-red-500 hover:text-red-700">Delete</button>
+                            <a
+                              href={course.introVideo}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-blue-400 hover:underline"
+                            >
+                              View
+                            </a>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {course.originalPrice}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {course.discountPrice}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <button
+                              onClick={() => handleEditCourse(course)}
+                              className="text-green-400 hover:text-green-500 mr-2"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteCourse(course._id)}
+                              className="text-red-500 hover:text-red-600"
+                            >
+                              Delete
+                            </button>
                           </td>
                         </tr>
                       ))}
@@ -401,7 +471,11 @@ function AdminPage() {
                   <p>No courses found.</p>
                 )}
                 <div className="mt-4">
-                  <button onClick={() => setCourseViewMode("add")} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                  <button
+                    onClick={() => setCourseViewMode("add")}
+                    className="px-4 py-2 bg-blue-500 text-black rounded hover:bg-blue-600 flex items-center gap-2"
+                  >
+                    <Plus size={20} />
                     Add New Course
                   </button>
                 </div>
@@ -410,171 +484,254 @@ function AdminPage() {
 
             {(courseViewMode === "add" || courseViewMode === "edit") && (
               <>
-                <h2 className="text-xl font-semibold text-black mb-6">
+                <h2 className="text-xl font-semibold mb-6">
                   {courseViewMode === "edit" ? "Edit Course" : "Add New Course"}
                 </h2>
                 <form onSubmit={handleCourseSubmit} className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Course Name</label>
+                    <label className="block text-sm font-medium mb-1">
+                      Course Name
+                    </label>
                     <input
                       type="text"
                       value={courseForm.courseName}
-                      onChange={(e) => setCourseForm({ ...courseForm, courseName: e.target.value })}
+                      onChange={(e) =>
+                        setCourseForm({ ...courseForm, courseName: e.target.value })
+                      }
                       required
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <label className="block text-sm font-medium mb-1">
+                      Description
+                    </label>
                     <textarea
                       rows={3}
                       value={courseForm.description}
-                      onChange={(e) => setCourseForm({ ...courseForm, description: e.target.value })}
+                      onChange={(e) =>
+                        setCourseForm({ ...courseForm, description: e.target.value })
+                      }
                       required
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Included Assets (comma separated)</label>
+                    <label className="block text-sm font-medium mb-1">
+                      Included Assets (comma separated)
+                    </label>
                     <input
                       type="text"
                       value={courseForm.includedAssets}
-                      onChange={(e) => setCourseForm({ ...courseForm, includedAssets: e.target.value })}
+                      onChange={(e) =>
+                        setCourseForm({ ...courseForm, includedAssets: e.target.value })
+                      }
                       required
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Intro Video URL</label>
+                    <label className="block text-sm font-medium mb-1">
+                      Intro Video URL
+                    </label>
                     <input
                       type="text"
                       value={courseForm.introVideo}
-                      onChange={(e) => setCourseForm({ ...courseForm, introVideo: e.target.value })}
+                      onChange={(e) =>
+                        setCourseForm({ ...courseForm, introVideo: e.target.value })
+                      }
                       required
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Languages (comma separated)</label>
+                    <label className="block text-sm font-medium mb-1">
+                      Languages (comma separated)
+                    </label>
                     <input
                       type="text"
                       value={courseForm.languages}
-                      onChange={(e) => setCourseForm({ ...courseForm, languages: e.target.value })}
+                      onChange={(e) =>
+                        setCourseForm({ ...courseForm, languages: e.target.value })
+                      }
                       required
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Original Price</label>
+                    <label className="block text-sm font-medium mb-1">
+                      Original Price
+                    </label>
                     <input
                       type="number"
                       value={courseForm.originalPrice}
-                      onChange={(e) => setCourseForm({ ...courseForm, originalPrice: e.target.value })}
+                      onChange={(e) =>
+                        setCourseForm({ ...courseForm, originalPrice: e.target.value })
+                      }
                       required
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Discount Price</label>
+                    <label className="block text-sm font-medium mb-1">
+                      Discount Price
+                    </label>
                     <input
                       type="number"
                       value={courseForm.discountPrice}
-                      onChange={(e) => setCourseForm({ ...courseForm, discountPrice: e.target.value })}
+                      onChange={(e) =>
+                        setCourseForm({ ...courseForm, discountPrice: e.target.value })
+                      }
                       required
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Promocode</label>
+                    <label className="block text-sm font-medium mb-1">
+                      Promocode
+                    </label>
                     <input
                       type="text"
                       value={courseForm.promocode}
-                      onChange={(e) => setCourseForm({ ...courseForm, promocode: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      onChange={(e) =>
+                        setCourseForm({ ...courseForm, promocode: e.target.value })
+                      }
+                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                   {/* Subjects and Chapters Section */}
                   <div className="mt-4">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-2">Subjects</h3>
+                    <h3 className="text-lg font-semibold mb-2">Subjects</h3>
                     {subjects.map((subject, subjIndex) => (
-                      <div key={subjIndex} className="border p-4 rounded mb-4">
+                      <div
+                        key={subjIndex}
+                        className="border border-gray-700 p-4 rounded mb-4"
+                      >
                         <div className="flex justify-between items-center mb-2">
                           <input
                             type="text"
                             placeholder="Subject Name"
                             value={subject.subjectName}
-                            onChange={(e) => handleSubjectNameChange(subjIndex, e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                            onChange={(e) =>
+                              handleSubjectNameChange(subjIndex, e.target.value)
+                            }
+                            className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
                           />
-                          <button onClick={() => removeSubject(subjIndex)} type="button" className="ml-2 text-red-500 hover:text-red-700">
+                          <button
+                            onClick={() => removeSubject(subjIndex)}
+                            type="button"
+                            className="ml-2 text-red-500 hover:text-red-600"
+                          >
                             Remove
                           </button>
                         </div>
                         <div>
-                          <h4 className="text-md font-semibold text-gray-800 mb-2">Chapters</h4>
+                          <h4 className="text-md font-semibold mb-2">Chapters</h4>
                           {subject.chapters.map((chapter, chapIndex) => (
                             <div key={chapIndex} className="mb-2">
                               <input
                                 type="text"
                                 placeholder="Chapter Name"
                                 value={chapter.chapterName}
-                                onChange={(e) => handleChapterChange(subjIndex, chapIndex, "chapterName", e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mb-1"
+                                onChange={(e) =>
+                                  handleChapterChange(
+                                    subjIndex,
+                                    chapIndex,
+                                    "chapterName",
+                                    e.target.value
+                                  )
+                                }
+                                className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 mb-1"
                               />
                               <input
                                 type="text"
                                 placeholder="Quiz Link"
                                 value={chapter.quizLink}
-                                onChange={(e) => handleChapterChange(subjIndex, chapIndex, "quizLink", e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mb-1"
+                                onChange={(e) =>
+                                  handleChapterChange(
+                                    subjIndex,
+                                    chapIndex,
+                                    "quizLink",
+                                    e.target.value
+                                  )
+                                }
+                                className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 mb-1"
                               />
-
-                              {/* Upload PDF */}
-                              <label className="block text-sm font-medium text-gray-700 mb-1">Upload PDF</label>
+                              <label className="block text-sm font-medium mb-1">
+                                Upload PDF
+                              </label>
                               <input
                                 type="file"
                                 onChange={(e) => {
                                   if (e.target.files[0]) {
-                                    handleFileUpload(subjIndex, chapIndex, "pdfLink", e.target.files[0]);
+                                    handleFileUpload(
+                                      subjIndex,
+                                      chapIndex,
+                                      "pdfLink",
+                                      e.target.files[0]
+                                    );
                                   }
                                 }}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mb-1"
+                                className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 mb-1"
                               />
-
-                              {/* Upload Audio */}
-                              <label className="block text-sm font-medium text-gray-700 mb-1">Upload Audio</label>
+                              <label className="block text-sm font-medium mb-1">
+                                Upload Audio
+                              </label>
                               <input
                                 type="file"
                                 onChange={(e) => {
                                   if (e.target.files[0]) {
-                                    handleFileUpload(subjIndex, chapIndex, "audioLink", e.target.files[0]);
+                                    handleFileUpload(
+                                      subjIndex,
+                                      chapIndex,
+                                      "audioLink",
+                                      e.target.files[0]
+                                    );
                                   }
                                 }}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mb-1"
+                                className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 mb-1"
                               />
-
-                              <button onClick={() => removeChapter(subjIndex, chapIndex)} type="button" className="text-red-500 hover:text-red-700">
+                              <button
+                                onClick={() => removeChapter(subjIndex, chapIndex)}
+                                type="button"
+                                className="text-red-500 hover:text-red-600"
+                              >
                                 Remove Chapter
                               </button>
                             </div>
                           ))}
-                          <button onClick={() => addChapter(subjIndex)} type="button" className="mt-2 text-blue-500 hover:text-blue-700">
+                          <button
+                            onClick={() => addChapter(subjIndex)}
+                            type="button"
+                            className="mt-2 text-blue-400 hover:text-blue-500"
+                          >
                             Add Chapter
                           </button>
                         </div>
                       </div>
                     ))}
-                    <button onClick={addSubject} type="button" className="mt-2 text-blue-500 hover:text-blue-700">
+                    <button
+                      onClick={addSubject}
+                      type="button"
+                      className="mt-2 text-blue-400 hover:text-blue-500"
+                    >
                       Add Subject
                     </button>
                   </div>
                   <div className="flex gap-4">
-                    <button type="submit" className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center gap-2">
+                    <button
+                      type="submit"
+                      className="w-full px-4 py-2 bg-blue-500 text-black rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
+                    >
                       <Plus size={20} />
                       {courseViewMode === "edit" ? "Update Course" : "Add Course"}
                     </button>
                     {courseViewMode === "edit" && (
-                      <button onClick={cancelEdit} type="button" className="w-full px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors">
+                      <button
+                        onClick={cancelEdit}
+                        type="button"
+                        className="w-full px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                      >
                         Cancel
                       </button>
                     )}
@@ -585,24 +742,40 @@ function AdminPage() {
 
             {courseViewMode === "transactions" && (
               <>
-                <h2 className="text-xl font-semibold text-black mb-4">Transactions List</h2>
+                <h2 className="text-xl font-semibold mb-4">Transactions List</h2>
                 {transactions.length ? (
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                  <table className="min-w-full divide-y divide-gray-700">
+                    <thead className="bg-gray-800">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transaction ID</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                          Transaction ID
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                          Course
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                          Amount
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                          Date
+                        </th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-gray-900 divide-y divide-gray-700">
                       {transactions.map((txn) => (
                         <tr key={txn._id}>
-                          <td className="px-6 py-4 whitespace-nowrap">{txn.razorpay_order_id}</td>
-                          <td className="px-6 py-4 whitespace-nowrap">{txn.course}</td>
-                          <td className="px-6 py-4 whitespace-nowrap">₹{txn.amount / 100}</td>
-                          <td className="px-6 py-4 whitespace-nowrap">{new Date(txn.createdAt).toLocaleString()}</td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {txn.razorpay_order_id}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {txn.course}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            ₹{txn.amount / 100}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {new Date(txn.createdAt).toLocaleString()}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -611,7 +784,10 @@ function AdminPage() {
                   <p>No transactions found.</p>
                 )}
                 <div className="mt-4">
-                  <button onClick={() => setCourseViewMode("list")} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                  <button
+                    onClick={() => setCourseViewMode("list")}
+                    className="px-4 py-2 bg-blue-500 text-black rounded hover:bg-blue-600"
+                  >
                     Back to Courses
                   </button>
                 </div>
@@ -621,40 +797,49 @@ function AdminPage() {
         )}
 
         {activeTab === "admin" && (
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-6">Create New Admin</h2>
+          <div className="bg-gray-800 rounded-lg shadow-md p-6">
+            <h2 className="text-xl font-semibold mb-6">Create New Admin</h2>
             <form onSubmit={handleAdminSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                <label className="block text-sm font-medium mb-1">Name</label>
                 <input
                   type="text"
                   value={adminForm.name}
-                  onChange={(e) => setAdminForm({ ...adminForm, name: e.target.value })}
+                  onChange={(e) =>
+                    setAdminForm({ ...adminForm, name: e.target.value })
+                  }
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <label className="block text-sm font-medium mb-1">Email</label>
                 <input
                   type="email"
                   value={adminForm.email}
-                  onChange={(e) => setAdminForm({ ...adminForm, email: e.target.value })}
+                  onChange={(e) =>
+                    setAdminForm({ ...adminForm, email: e.target.value })
+                  }
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <label className="block text-sm font-medium mb-1">Password</label>
                 <input
                   type="password"
                   value={adminForm.password}
-                  onChange={(e) => setAdminForm({ ...adminForm, password: e.target.value })}
+                  onChange={(e) =>
+                    setAdminForm({ ...adminForm, password: e.target.value })
+                  }
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
               </div>
-              <button type="submit" className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center gap-2">
+              <button
+                type="submit"
+                className="w-full px-4 py-2 bg-blue-500 text-black rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
+              >
                 <User size={20} />
                 Create Admin
               </button>

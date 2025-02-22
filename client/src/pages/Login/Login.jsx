@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import API from "../../../api";
 import { useNavigate, Link } from "react-router-dom";
-import { toast } from "react-hot-toast";
 import { Mail, Lock, LogIn, User } from "lucide-react";
+import toast from "react-hot-toast";
 
-function Login() {
+function Login({ onSuccess, onRegisterClick }) {
   const [form, setForm] = useState({ email: "", password: "" });
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -15,6 +15,7 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    toast.loading("Logging in...");
     try {
       const { data } = await API.post("/auth/login", form);
       localStorage.setItem("token", data.token);
@@ -24,8 +25,13 @@ function Login() {
       if (data.user.type === "admin") {
         navigate("/admin");
       } else {
-        navigate("/");
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          navigate("/");
+        }
       }
+      toast.remove();
     } catch (err) {
       const message = err.response?.data?.message || "Login failed. Please try again.";
       toast.error(message);
@@ -35,12 +41,12 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen w-screen w-full pt-250 w-full flex items-center justify-center bg-transparent">
-      <div className="relative w-full max-w-md mx-4">
+    <div className="min-h-auto w-full max-w-md">
+      <div className="relative">
         {/* Decorative Elements */}
-        <div className="absolute inset-0  transform rotate-12 rounded-3xl blur-3xl" />
+        <div className="absolute inset-0 transform rotate-12 rounded-3xl blur-3xl" />
         
-        <div className="relative  p-8 rounded-2xl shadow-2xl border border-gray-700/50">
+        <div className="relative p-8 rounded-2xl shadow-2xl border border-gray-700/50 bg-gray-800">
           <div className="mb-8 text-center">
             <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
               <User size={32} className="text-white" />
@@ -105,14 +111,14 @@ function Login() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-2.5 bg-red-900  text-white text-sm font-semibold
+              className="w-full py-2.5 bg-red-900 text-white text-sm font-semibold
                        rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-200
                        focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:ring-offset-1 
                        focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed
                        flex items-center justify-center gap-2"
             >
               {isLoading ? (
-                <div className="w-5 h-5 border-2 bg-red-900  border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 bg-red-900 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
                 <>
                   <LogIn size={18} />
@@ -164,7 +170,7 @@ function Login() {
                 Forgot password?
               </Link>
               <Link
-                to="/register"
+                onClick={onRegisterClick}
                 className="hover:text-purple-400 transition-colors duration-200"
               >
                 Create an account

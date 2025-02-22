@@ -19,6 +19,12 @@ function CourseDetail() {
   const [loading, setLoading] = useState(true);
   const [purchased, setPurchased] = useState(false);
 
+  // New states for promocode functionality.
+  const [promoCode, setPromoCode] = useState("");
+  const [promoMessage, setPromoMessage] = useState("");
+  const [promoApplied, setPromoApplied] = useState(false);
+  const [finalPrice, setFinalPrice] = useState(null);
+
   // Buy Now handler triggers Razorpay checkout flow.
   const handleBuyNow = async () => {
     try {
@@ -78,7 +84,7 @@ function CourseDetail() {
     }
   };
 
-  // Fetch basic course details from the backend.
+  // Fetch course details.
   useEffect(() => {
     const token = localStorage.getItem("token");
     API.get(`/courses/course/${courseId}`, {
@@ -86,6 +92,8 @@ function CourseDetail() {
     })
       .then((res) => {
         setCourse(res.data.course);
+        // Set the finalPrice initially to the discountPrice.
+        setFinalPrice(res.data.course.discountPrice);
         setLoading(false);
       })
       .catch((err) => {
@@ -94,7 +102,7 @@ function CourseDetail() {
       });
   }, [courseId]);
 
-  // Fetch user profile to check if the course is already purchased.
+  // Check if the course is already purchased.
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -111,6 +119,20 @@ function CourseDetail() {
         });
     }
   }, [courseId]);
+
+  // Handler for applying promo code.
+  const handleApplyPromo = () => {
+    // Demo promo: if the user enters "SAVE10" (case-insensitive), give an extra 10% off.
+    if (promoCode.trim().toUpperCase() === "SAVE10") {
+      const newPrice = (course.discountPrice * 0.9).toFixed(2);
+      setFinalPrice(newPrice);
+      setPromoMessage("Promo code applied! Enjoy an extra 10% discount.");
+      setPromoApplied(true);
+    } else {
+      setPromoMessage("Invalid promo code.");
+      setPromoApplied(false);
+    }
+  };
 
   if (loading) return <p>Loading course details...</p>;
   if (!course) return <p>Course not found!</p>;
@@ -154,12 +176,10 @@ function CourseDetail() {
                     <ul className="learn-list">
                       {course.includedAssets &&
                         course.includedAssets.map((asset, index) => (
-                          <li key={index} className="">
+                          <li key={index}>
                             <a href="#" className="!flex align-items-center gap-2">
                               <span className="play-video">
-                                {/* Lock Icon */}
                                 <Lock />
-                                {/* <img src="https://cdn.iconscout.com/icon/free/png-256/free-lock-icon-download-in-svg-png-gif-file-formats--open-unlocked-user-interface-pack-icons-83536.png" alt="asset" /> */}
                               </span>
                               {asset}
                             </a>
@@ -187,7 +207,7 @@ function CourseDetail() {
               </div>
             </div>
 
-            {/* Pricing Section */}
+            {/* Pricing & Promo Section */}
             <div className="row">
               <div className="col-xl-6 col-lg-7">
                 <div className="project-details mt-35">
@@ -195,13 +215,40 @@ function CourseDetail() {
                     <li>
                       <div className="price-list">
                         <h5>
-                          <span>₹{course.originalPrice}</span>
-                          <b className="sub-title">₹{course.discountPrice} 🎉</b>
+                          {/* Display original price struck through */}
+                          <span className="line-through text-gray-500">₹{course.originalPrice}</span>
+                          <b className="sub-title ml-2">
+                            ₹{finalPrice} {promoApplied && <span>🎉</span>}
+                          </b>
                         </h5>
                       </div>
                     </li>
                   </ul>
-                  <div className="cart-btn offer_btn">
+                  {/* Promocode UI */}
+                  <div className="promo-code-section mt-4">
+                    <input 
+                      type="text" 
+                      value={promoCode} 
+                      onChange={(e) => setPromoCode(e.target.value)} 
+                      placeholder="Enter promo code" 
+                      className="p-2 rounded border border-gray-700 transition-all duration-300 focus:outline-none focus:border-[#b16901]" 
+                    />
+                    <button 
+                      onClick={handleApplyPromo} 
+                      className="ml-2 bg-[#b16901] text-white px-3 py-2 rounded hover:bg-[#c27811] transition-transform duration-300 hover:scale-105"
+                    >
+                      Apply
+                    </button>
+                    {promoMessage && (
+                      <p 
+                        className={`mt-2 text-sm ${promoApplied ? "text-green-500" : "text-red-500"}`}
+                        style={{ animation: "fadeIn 0.5s ease-in-out" }}
+                      >
+                        {promoMessage}
+                      </p>
+                    )}
+                  </div>
+                  <div className="cart-btn offer_btn mt-4">
                     {purchased ? (
                       <div onClick={() => navigate(`/course-content/${courseId}`)}>
                         View Course

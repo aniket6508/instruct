@@ -16,7 +16,8 @@ import AuthSuccess from './components/AuthSuccess';
 import Footer from './components/Footer';
 import CourseContent from './pages/CourseContent';
 import CourseContentDetail from './pages/CourseContentDetail';
-
+import Contact from './pages/Contact';
+import { Toaster } from 'react-hot-toast';
 function App() {
   return (
     <>
@@ -35,6 +36,7 @@ function App() {
           <Route path='/about' element={<About />} />
           <Route path='/register' element={<Register />} />
           <Route path='/login' element={<Login />} />
+          <Route path='/contact' element={<Contact />} />
           <Route path='/vision' element={<Vision />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path='/courses' element={<Courses />} />
@@ -46,6 +48,7 @@ function App() {
         </Routes>
         <Footer />
       </Router>
+      <Toaster/>
 
     </>
   )
